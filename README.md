@@ -28,6 +28,7 @@ obtaining the versions of dependencies as they existed at a specific historical
 moment in the past, effectively simulating an installation at that point in time
 (specifically between the releases of phoenix-1.6.2 and 1.6.3).
 
+[Detailed information on how to init a new Phoenix-1.6 project](./doc/00-setup.md)
 
 
 

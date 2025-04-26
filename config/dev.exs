@@ -1,9 +1,33 @@
 import Config
 
+defmodule Credentials do
+  @doc """
+  fetch password from ~/.pgpass for a given username
+  """
+  def fetch_pass_from_pgpass(username) do
+    filename = Path.join(System.get_env("HOME"), ".pgpass")
+
+    filename
+    |> File.read!()
+    |> String.split("\n")
+    |> Enum.find_value(nil, fn line ->
+      case line do
+        "#" <> _rest -> # comment
+            nil
+        line ->
+          case String.split(line, ":") do
+            [_,_,_, ^username, password] -> password # Return password if matched
+            _ -> nil
+          end
+      end
+    end)
+  end
+end
+
 # Configure your database
 config :sample_app, SampleApp.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: "dbuser",
+  password: Credentials.fetch_pass_from_pgpass("dbuser"),
   database: "sample_app_dev",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
