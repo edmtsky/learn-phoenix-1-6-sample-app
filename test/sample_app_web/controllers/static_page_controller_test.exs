@@ -25,4 +25,11 @@ defmodule SampleAppWeb.StaticPageControllerTest do
     |> assert_select("title", "About | #{@base_title}")
   end
 
+  test "should get contact", %{conn: conn} do
+    conn = get(conn, Routes.static_page_path(conn, :contact))
+
+    html_response(conn, 200)
+    |> assert_select("title", "Contact | #{@base_title}")
+  end
+
 end

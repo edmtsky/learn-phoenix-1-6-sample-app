@@ -20,6 +20,8 @@ defmodule SampleAppWeb.DynamicTextHelpers do
 
   defp get_page_title(%{action: :about}), do: "About"
 
+  defp get_page_title(%{action: :contact}), do: "Contact"
+
   defp get_page_title(%{action: _}), do: nil
 
   defp get_page_title(_), do: nil
