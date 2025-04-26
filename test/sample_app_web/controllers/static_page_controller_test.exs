@@ -31,5 +31,4 @@ defmodule SampleAppWeb.StaticPageControllerTest do
     html_response(conn, 200)
     |> assert_select("title", "Contact | #{@base_title}")
   end
-
 end

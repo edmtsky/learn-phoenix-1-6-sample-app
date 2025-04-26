@@ -50,7 +50,6 @@ defmodule SampleApp.MixProject do
       {:jason, "1.3.0"},
       {:plug_cowboy, "2.5.2"},
       {:html_assertion, "0.1.5", only: :test},
-
       {:pgpass, git: "https://github.com/edmtsky/pgpass.git", tag: "0.1.1"},
 
       # transitive
@@ -68,7 +67,7 @@ defmodule SampleApp.MixProject do
       {:plug, "1.12.1"},
       {:plug_crypto, "1.2.2"},
       {:ranch, "1.8.0"},
-      {:telemetry, "1.0.0"},
+      {:telemetry, "1.0.0"}
     ]
   end
 

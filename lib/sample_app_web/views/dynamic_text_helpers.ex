@@ -1,5 +1,4 @@
 defmodule SampleAppWeb.DynamicTextHelpers do
-
   @base_title "Phoenix Tutorial Sample App"
 
   def page_title(assigns) do
