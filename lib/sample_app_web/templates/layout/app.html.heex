@@ -1,1 +1,13 @@
-<%= @inner_content %>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      <%= SampleAppWeb.DynamicTextHelpers.page_title(Enum.into(assigns,
+      %{action: @conn.private.phoenix_action})) %>
+    </title>
+  </head>
+  <body>
+    <%= @inner_content %>
+  </body>
+</html>
+
