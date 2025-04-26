@@ -1,4 +1,5 @@
 import Config
+Code.require_file("./deps/pgpass/lib/pgpass.ex")
 
 # Configure your database
 #
@@ -6,8 +7,10 @@ import Config
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :sample_app, SampleApp.Repo,
-  username: "postgres",
-  password: "postgres",
+  # username: "postgres",
+  # password: "postgres",
+  username: "dbuser",
+  password: Pgpass.find_password("dbuser"),
   database: "sample_app_test#{System.get_env("MIX_TEST_PARTITION")}",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox,

@@ -51,6 +51,8 @@ defmodule SampleApp.MixProject do
       {:plug_cowboy, "2.5.2"},
       {:html_assertion, "0.1.5", only: :test},
 
+      {:pgpass, git: "https://github.com/edmtsky/pgpass.git", tag: "0.1.1"},
+
       # transitive
       {:castore, "0.1.13"},
       {:cowboy, "2.9.0"},
