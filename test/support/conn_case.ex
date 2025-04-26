@@ -25,6 +25,7 @@ defmodule SampleAppWeb.ConnCase do
       import SampleAppWeb.ConnCase
 
       alias SampleAppWeb.Router.Helpers, as: Routes
+      use HTMLAssertion
 
       # The default endpoint for testing
       @endpoint SampleAppWeb.Endpoint
