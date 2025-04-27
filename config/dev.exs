@@ -26,9 +26,12 @@ config :sample_app, SampleAppWeb.Endpoint,
   code_reloader: true,
   debug_errors: true,
   secret_key_base: "aOz5if4wYiAxGbjLIAijVyDpk8qmA42mUzLhhyBONEy/hGDDsxsDJLEgBrZTs2MC",
+  # watchers: [
+  #   # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
+  #   esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
+  # ]
   watchers: [
-    # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
+    node: ["build.js", "--watch", cd: Path.expand("../assets", __DIR__)]
   ]
 
 # ## SSL Support
