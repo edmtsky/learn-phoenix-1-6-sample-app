@@ -4,6 +4,13 @@ defmodule SampleAppWeb.StaticPageControllerTest do
 
   @base_title "Phoenix Tutorial Sample App"
 
+  test "should get root", %{conn: conn} do
+    conn = get(conn, Routes.root_path(conn, :home))
+
+    html_response(conn, 200)
+    |> assert_select("title", "Home | #{@base_title}")
+  end
+
   test "should get home", %{conn: conn} do
     conn = get(conn, Routes.static_page_path(conn, :home))
 
