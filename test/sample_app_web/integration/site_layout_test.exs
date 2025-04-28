@@ -3,6 +3,7 @@ defmodule SampleAppWeb.SiteLayoutTest do
 
   alias SampleAppWeb.DynamicTextHelpers
   alias SampleAppWeb.StaticPageView
+  alias SampleAppWeb.UserView
 
   # A test for the links on the layout
   # This ensures that links to the pages are present.
@@ -32,5 +33,17 @@ defmodule SampleAppWeb.SiteLayoutTest do
     # then
     html_response(conn, 200)
     |> assert_select("title", contact_page_title)
+  end
+
+  test "signup page title", %{conn: conn} do
+    signup_page_title =
+      Enum.into(conn.assigns, %{view_module: UserView, action: :new})
+      |> DynamicTextHelpers.page_title()
+      |> to_string()
+
+    conn = get(conn, Routes.signup_path(conn, :new))
+
+    html_response(conn, 200)
+    |> assert_select("title", signup_page_title)
   end
 end

@@ -6,7 +6,8 @@
       <a href="#">Phoenix Tutorial</a>
       sample application.
     </h2>
-    <%= link "Sign up now!", to: "#", class: "btn btn-lg btn-primary" %>
+    <%= link "Sign up now!", to: Routes.signup_path(@conn, :new),
+      class: "btn btn-lg btn-primary" %>
   </div>
 </div>
 <%= link img_tag(Routes.static_path(@conn, "/images/phoenix.png"),

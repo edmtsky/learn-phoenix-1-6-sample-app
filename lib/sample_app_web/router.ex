@@ -1,5 +1,6 @@
 defmodule SampleAppWeb.Router do
   use SampleAppWeb, :router
+  # alias SampleAppWeb.UserView
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -20,7 +21,7 @@ defmodule SampleAppWeb.Router do
     get "/help", StaticPageController, :help, as: :help
     get "/about", StaticPageController, :about, as: :about
     get "/contact", StaticPageController, :contact, as: :contact
-    get "/users/new", UserController, :new                                  # +
+    get "/signup", UserController, :new, as: :signup
   end
 
   # Other scopes may use custom stacks.

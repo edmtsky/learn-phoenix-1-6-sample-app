@@ -3,10 +3,11 @@
   - add automated testing
   - use a common templates in layout
 
-- styling
+- styling and routes
   - add site navigation
   - add Bootstrap, SASS and Popper.js, configure esbuild, add package.json
   - finished a site layout with decent styling
   - add named routes for the Home, About, Help and Contact pages
   - use the named routes in the site layout
   - layout link tests (integration(for links) and unit (for typo in title))
+  - and signup route: add User controller and :new action

@@ -1,4 +1,7 @@
 defmodule SampleAppWeb.DynamicTextHelpers do
+  alias SampleAppWeb.StaticPageView, as: SPView
+  alias SampleAppWeb.UserView
+
   @base_title "Phoenix Tutorial Sample App"
 
   def page_title(assigns) do
@@ -15,13 +18,15 @@ defmodule SampleAppWeb.DynamicTextHelpers do
 
   defp get_page_title(%{action: :home}), do: "Home"
 
-  defp get_page_title(%{action: :help}), do: "Help"
+  defp get_page_title(%{view_module: SPView, action: :help}), do: "Help"
 
-  defp get_page_title(%{action: :about}), do: "About"
+  defp get_page_title(%{view_module: SPView, action: :about}), do: "About"
 
-  defp get_page_title(%{action: :contact}), do: "Contact"
+  defp get_page_title(%{view_module: SPView, action: :contact}), do: "Contact"
 
-  defp get_page_title(%{action: _}), do: nil
+  defp get_page_title(%{view_module: UserView, action: :new}), do: "Sign up"
+
+  defp get_page_title(%{view_module: _, action: _, title: title}), do: title
 
   defp get_page_title(_), do: nil
 end
