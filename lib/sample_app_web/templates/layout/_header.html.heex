@@ -1,7 +1,10 @@
 <header>
   <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-      <%= link "sample app", to: "#" , id: "logo", class: "navbar-brand" %>
+
+      <%= link "sample app", to: Routes.root_path(@conn, :home),
+        id: "logo", class: "navbar-brand" %>
+
       <button class="navbar-toggler" type="button"
       data-bs-toggle="collapse" data-bs-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false"
@@ -11,10 +14,12 @@
       <div class="collapse navbar-collapse ms-auto" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <%= link "Home", to: "#" , class: "nav-link" %>
+            <%= link "Home", to: Routes.root_path(@conn, :home),
+              class: "nav-link" %>
           </li>
           <li class="nav-item">
-            <%= link "Help", to: "#" , class: "nav-link" %>
+            <%= link "Help", to: Routes.help_path(@conn, :help),
+              class: "nav-link" %>
           </li>
           <li class="nav-item">
             <%= link "Log in", to: "#" , class: "nav-link" %>

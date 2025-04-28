@@ -6,8 +6,8 @@
     </small>
     <nav>
       <ul>
-        <li><%= link "About", to: "#" %></li>
-        <li><%= link "Contact", to: "#" %></li>
+        <li><%= link "About", to: Routes.about_path(@conn, :about) %></li>
+        <li><%= link "Contact", to: Routes.contact_path(@conn, :contact) %></li>
       </ul>
     </nav>
   </div>
