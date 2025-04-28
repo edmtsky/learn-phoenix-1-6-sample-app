@@ -11,29 +11,22 @@ defmodule SampleAppWeb.StaticPageControllerTest do
     |> assert_select("title", "Home | #{@base_title}")
   end
 
-  test "should get home", %{conn: conn} do
-    conn = get(conn, Routes.static_page_path(conn, :home))
-
-    html_response(conn, 200)
-    |> assert_select("title", "Home | #{@base_title}")
-  end
-
   test "should get help", %{conn: conn} do
-    conn = get(conn, Routes.static_page_path(conn, :help))
+    conn = get(conn, Routes.help_path(conn, :help))
 
     html_response(conn, 200)
     |> assert_select("title", "Help | #{@base_title}")
   end
 
   test "should get about", %{conn: conn} do
-    conn = get(conn, Routes.static_page_path(conn, :about))
+    conn = get(conn, Routes.about_path(conn, :about))
 
     html_response(conn, 200)
     |> assert_select("title", "About | #{@base_title}")
   end
 
   test "should get contact", %{conn: conn} do
-    conn = get(conn, Routes.static_page_path(conn, :contact))
+    conn = get(conn, Routes.contact_path(conn, :contact))
 
     html_response(conn, 200)
     |> assert_select("title", "Contact | #{@base_title}")
