@@ -73,3 +73,33 @@ p {
   text-decoration: none;
 }
 
+/* footer */
+
+footer {
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px solid #eaeaea;
+  color: #343a40;
+}
+
+footer a {
+  color: #555;
+}
+
+footer a:hover {
+  color: #222;
+}
+
+footer small {
+  float: left;
+}
+
+footer ul {
+  float: right;
+  list-style: none;
+}
+
+footer ul li {
+  float: left;
+  margin-left: 15px;
+}

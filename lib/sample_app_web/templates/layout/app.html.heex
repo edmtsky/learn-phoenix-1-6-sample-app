@@ -8,39 +8,13 @@
           action: @conn.private.phoenix_action
         })) %>
     </title>
-    <link rel="stylesheet"
-    href={Routes.static_path(@conn, "/assets/app.css")} />
+    <%= render "_styles.html", assigns %>
   </head>
   <body>
-  <header>
-    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid">
-          <%= link "sample app", to: "#" , id: "logo",
-          class: "navbar-brand" %>
-          <button class="navbar-toggler" type="button"
-          data-bs-toggle="collapse" data-bs-target="#navbarNav"
-          aria-controls="navbarNav" aria-expanded="false"
-          aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse ms-auto" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-              <li class="nav-item">
-                <%= link "Home", to: "#" , class: "nav-link" %>
-              </li>
-              <li class="nav-item">
-                <%= link "Help", to: "#" , class: "nav-link" %>
-              </li>
-              <li class="nav-item">
-                <%= link "Log in", to: "#" , class: "nav-link" %>
-              </li>
-            </ul>
-          </div>
-      </div>
-    </nav>
-  </header>
+  <%= render "_header.html", assigns %>
   <div class="container mt-4">
     <%= @inner_content %>
+    <%= render "_footer.html", assigns %>
   </div>
   <script type="text/javascript"
   src={ Routes.static_path(@conn, "/assets/app.js")}></script>
