@@ -343,3 +343,92 @@ defmodule SampleApp.Accounts do
   end
 end
 ```
+
+add length for name and email and validate_format for email:
+
+```elixir
+defmodule SampleApp.Accounts.User do
+  use Ecto.Schema
+  import Ecto.Changeset
+
+  @valid_email_regex ~r/\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
+
+  schema "users" do
+    field :email, :string
+    field :name, :string
+
+    timestamps()
+  end
+
+  @doc false
+  def changeset(user, attrs) do
+    user
+    |> cast(attrs, [:name, :email])
+    |> validate_required([:name, :email])
+    |> validate_length(:name, max: 50)
+    |> validate_length(:email, max: 255)
+    |> validate_format(:email, @valid_email_regex)
+  end
+end
+```
+
+
+## Validate uniqueness (for email)
+
+validate_uniqueness for email needs db-index for email column,
+so create migration to add index:
+
+```elixir
+mix ecto.gen.migration add_unique_index_to_users_email
+Compiling 2 files (.ex)
+* creating priv/repo/migrations/20250429170756_add_unique_index_to_users_email.exs
+```
+
+
+Unlike the migration for `users`,
+the `email` uniqueness migration is not pre-defined, so
+you need to fill in its contents with:
+
+given code-snippert for a new migration:
+```elixir
+defmodule SampleApp.Repo.Migrations.AddUniqueIndexToUsersEmail do
+  use Ecto.Migration
+
+  def change do
+    # .. place for code
+  end
+end
+```
+
+> priv/repo/migrations/20250429170756_add_unique_index_to_users_email.exs
+```elixir
+defmodule SampleApp.Repo.Migrations.AddUniqueIndexToUsersEmail do
+  use Ecto.Migration
+
+  def change do
+    create unique_index(:users, [:email])
+    #^macro ^Ecto-func  ^table_name ^column_name
+  end
+end
+```
+
+
+```elixir
+defmodule SampleApp.Accounts.User do
+  use Ecto.Schema
+  import Ecto.Changeset
+  #...
+
+  @doc false
+  def changeset(user, attrs) do
+    user
+    |> cast(attrs, [:name, :email])
+    |> validate_required([:name, :email])
+    |> validate_length(:name, max: 50)
+    |> validate_length(:email, max: 255)
+    |> validate_format(:email, @valid_email_regex)
+
+    |> update_change(:email, &String.downcase/1)           # <<< +
+    |> unique_constraint(:email)                           # <<< +
+  end
+```

@@ -147,6 +147,23 @@ defmodule SampleApp.AccountsTest do
       end
     end
 
+    test "create_user/1 existing email address does not insert user" do
+      user = user_fixture()
+
+      assert {:error, %Ecto.Changeset{}} =
+               Accounts.create_user(%{
+                 name: user.name,
+                 email: String.upcase(user.email)
+               })
+    end
+
+    test "create_user/1 email address is inserted as lower-case" do
+      mixed_case_email = "Foo@ExAMPle.CoM"
+
+      assert {:ok, %User{email: "foo@example.com"}} =
+               Accounts.create_user(%{name: "some name", email: mixed_case_email})
+    end
+
     test "update_user/2 with valid data updates the user" do
       user = user_fixture()
       update_attrs = %{email: "some-updated@email.com", name: "some updated name"}

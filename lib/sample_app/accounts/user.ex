@@ -19,5 +19,7 @@ defmodule SampleApp.Accounts.User do
     |> validate_length(:name, max: 50)
     |> validate_length(:email, max: 255)
     |> validate_format(:email, @valid_email_regex)
+    |> update_change(:email, &String.downcase/1)
+    |> unique_constraint(:email)
   end
 end
