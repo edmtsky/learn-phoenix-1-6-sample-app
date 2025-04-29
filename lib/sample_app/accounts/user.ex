@@ -14,5 +14,7 @@ defmodule SampleApp.Accounts.User do
     user
     |> cast(attrs, [:name, :email])
     |> validate_required([:name, :email])
+    |> validate_length(:name, max: 50)
+    |> validate_length(:email, max: 255)
   end
 end

@@ -84,6 +84,33 @@ defmodule SampleApp.AccountsTest do
       assert {:error, %Ecto.Changeset{}} = Accounts.create_user(@invalid_attrs)
     end
 
+    test "create_user/1 name left blank does not insert user" do
+      bad_user_attrs = %{email: "some email", name: "      "}
+
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_user(bad_user_attrs)
+    end
+
+    test "create_user/1 email left blank does not insert user" do
+      bad_user_attrs = %{email: "   ", name: "some name"}
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_user(bad_user_attrs)
+    end
+
+    test "create_user/1 name too long does not insert user" do
+      assert {:error, %Ecto.Changeset{}} =
+               Accounts.create_user(%{
+                 email: "some email",
+                 name: String.duplicate("a", 51)
+               })
+    end
+
+    test "create_user/1 email too long does not insert user" do
+      assert {:error, %Ecto.Changeset{}} =
+               Accounts.create_user(%{
+                 name: "some name",
+                 email: String.duplicate("a", 244) <> "@example.com"
+               })
+    end
+
     test "update_user/2 with valid data updates the user" do
       user = user_fixture()
       update_attrs = %{email: "some updated email", name: "some updated name"}
