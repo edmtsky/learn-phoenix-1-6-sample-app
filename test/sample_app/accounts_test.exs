@@ -12,12 +12,64 @@ defmodule SampleApp.AccountsTest do
 
     test "list_users/0 returns all users" do
       user = user_fixture()
-      assert Accounts.list_users() == [user]
+
+      user2 = user_fixture(%{email: "email2@example.com"})
+
+      assert Accounts.list_users() == [user, user2]
     end
 
+    # describe "get_user!/1" do
     test "get_user!/1 returns the user with given id" do
       user = user_fixture()
       assert Accounts.get_user!(user.id) == user
+    end
+
+    test "get_user!/1 returns nil if the user is not found" do
+      invalid_user_id = 111
+
+      assert_raise Ecto.NoResultsError, fn ->
+        Accounts.get_user!(invalid_user_id)
+      end
+    end
+
+    # end
+
+    # describe "get_user/1" do
+    test "get_user/1 returns the user with given id" do
+      user = user_fixture()
+      assert Accounts.get_user(user.id) == user
+    end
+
+    # assert %User{} = Accounts.get_user(user.id)
+    test "get_user/1 returns nil if the user is not found" do
+      invalid_user_id = 111
+      assert Accounts.get_user(invalid_user_id) == nil
+    end
+
+    # end
+
+    test "get_user_by/1 returns the user with given email field" do
+      # {:ok, %User{email: email}} = Accounts.create_user(@valid_attrs)
+      %User{email: email} = user_fixture()
+      assert %User{email: ^email} = Accounts.get_user_by(email: email)
+    end
+
+    test "get_user_by/1 returns nil if the user is not found" do
+      invalid_user_email = "doesnotexist@example.com"
+      assert nil == Accounts.get_user_by(email: invalid_user_email)
+    end
+
+    test "get_user_by!/1 returns the user with given email field" do
+      %User{email: email} = user_fixture()
+      assert %User{email: ^email} = Accounts.get_user_by!(email: email)
+    end
+
+    test "get_user_by!/1 raises Ecto.NoResultsError if the user is not found" do
+      invalid_user_email = "doesnotexist@example.com"
+
+      assert_raise Ecto.NoResultsError, fn ->
+        Accounts.get_user_by!(email: invalid_user_email)
+      end
     end
 
     test "create_user/1 with valid data creates a user" do
@@ -51,6 +103,7 @@ defmodule SampleApp.AccountsTest do
       user = user_fixture()
       assert {:ok, %User{}} = Accounts.delete_user(user)
       assert_raise Ecto.NoResultsError, fn -> Accounts.get_user!(user.id) end
+      assert Repo.get(User, user.id) == nil
     end
 
     test "change_user/1 returns a user changeset" do

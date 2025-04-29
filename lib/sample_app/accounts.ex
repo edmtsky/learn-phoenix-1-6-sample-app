@@ -38,6 +38,38 @@ defmodule SampleApp.Accounts do
   def get_user!(id), do: Repo.get!(User, id)
 
   @doc """
+  Gets a single user.
+
+  returns `nil` if the User does not exist.
+
+  ## Examples
+
+      iex> get_user(123)
+      %User{}
+
+      iex> get_user(456)
+      nil
+
+  """
+  def get_user(id), do: Repo.get(User, id)
+
+  @doc """
+  Gets a single user by a given params
+  returns `nil` if the User does not exist.
+  """
+  def get_user_by(params) do
+    Repo.get_by(User, params)
+  end
+
+  @doc """
+  Gets a single user by a given params
+  Raises `Ecto.NoResultsError` if the User does not exist.
+  """
+  def get_user_by!(params) do
+    Repo.get_by!(User, params)
+  end
+
+  @doc """
   Creates a user.
 
   ## Examples
