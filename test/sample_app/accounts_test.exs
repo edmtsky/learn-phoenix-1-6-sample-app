@@ -73,10 +73,10 @@ defmodule SampleApp.AccountsTest do
     end
 
     test "create_user/1 with valid data creates a user" do
-      valid_attrs = %{email: "some email", name: "some name"}
+      valid_attrs = %{email: "some@email.com", name: "some name"}
 
       assert {:ok, %User{} = user} = Accounts.create_user(valid_attrs)
-      assert user.email == "some email"
+      assert user.email == "some@email.com"
       assert user.name == "some name"
     end
 
@@ -111,12 +111,48 @@ defmodule SampleApp.AccountsTest do
                })
     end
 
+    test "create_user/1 valid email addresses insert user" do
+      valid_addresses = [
+        "user@example.com",
+        "USER@foo.COM",
+        "A_US-ER@foo.bar.org",
+        "first.last@foo.jp",
+        "alice+bob@baz.cn"
+      ]
+
+      for valid_address <- valid_addresses do
+        assert {:ok, %User{}} =
+                 Accounts.create_user(%{
+                   name: "some name",
+                   email: valid_address
+                 })
+      end
+    end
+
+    test "create_user/1 invalid email addresses do not insert user" do
+      invalid_addresses = [
+        "user@example,com",
+        "user_at_foo.org",
+        "user.name@example.",
+        "foo@bar_baz.com",
+        "foo@bar+baz.com"
+      ]
+
+      for invalid_address <- invalid_addresses do
+        assert {:error, %Ecto.Changeset{}} =
+                 Accounts.create_user(%{
+                   name: "some name",
+                   email: invalid_address
+                 })
+      end
+    end
+
     test "update_user/2 with valid data updates the user" do
       user = user_fixture()
-      update_attrs = %{email: "some updated email", name: "some updated name"}
+      update_attrs = %{email: "some-updated@email.com", name: "some updated name"}
 
       assert {:ok, %User{} = user} = Accounts.update_user(user, update_attrs)
-      assert user.email == "some updated email"
+      assert user.email == "some-updated@email.com"
       assert user.name == "some updated name"
     end
 

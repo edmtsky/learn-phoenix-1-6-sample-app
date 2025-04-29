@@ -2,6 +2,8 @@ defmodule SampleApp.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @valid_email_regex ~r/\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
+
   schema "users" do
     field :email, :string
     field :name, :string
@@ -16,5 +18,6 @@ defmodule SampleApp.Accounts.User do
     |> validate_required([:name, :email])
     |> validate_length(:name, max: 50)
     |> validate_length(:email, max: 255)
+    |> validate_format(:email, @valid_email_regex)
   end
 end
