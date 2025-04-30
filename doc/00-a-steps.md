@@ -23,3 +23,4 @@
 
 - sign-up
   - debug information
+  - Users resource

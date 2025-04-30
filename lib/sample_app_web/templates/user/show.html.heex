@@ -1,0 +1,6 @@
+<%= @user.name %>, <%= @user.email %>
+<div>
+  <div>created: <%= @user.inserted_at %> </div>
+  <div>updated: <%= @user.updated_at %> </div>
+  <div>now: <%= NaiveDateTime.utc_now() %></div>
+</div>
