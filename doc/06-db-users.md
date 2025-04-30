@@ -536,3 +536,8 @@ defmodule SampleApp.Accounts.User do
 end
 ```
 
+
+### Minimum password length
+
+- password: {"should be at least %{count} character(s)"
+- password_confirmation: {"can't be blank", ..

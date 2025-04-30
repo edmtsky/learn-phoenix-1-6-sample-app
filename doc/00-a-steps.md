@@ -17,3 +17,4 @@
   - ecto changesets and validations
   - Adding a secure password
     - initial password system (to store hashes of the passwords)
+    - minimal password length

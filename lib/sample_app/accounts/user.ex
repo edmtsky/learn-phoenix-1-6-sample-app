@@ -22,6 +22,7 @@ defmodule SampleApp.Accounts.User do
     |> validate_length(:name, max: 50)
     |> validate_length(:email, max: 255)
     |> validate_format(:email, @valid_email_regex)
+    |> validate_length(:password, min: 6)
     |> validate_confirmation(:password, message: "does not match password")
     |> update_change(:email, &String.downcase/1)
     |> unique_constraint(:email)

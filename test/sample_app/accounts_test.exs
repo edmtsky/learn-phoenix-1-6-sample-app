@@ -196,6 +196,30 @@ defmodule SampleApp.AccountsTest do
                })
     end
 
+    test "create_user/1 password left blank does not insert user" do
+      blank_password = String.duplicate(" ", 6)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Accounts.create_user(%{
+                 name: "some name",
+                 email: "some@email.com",
+                 password: blank_password,
+                 password_confirmation: blank_password
+               })
+    end
+
+    test "create_user/1 password too short does not insert user" do
+      short_password = String.duplicate("a", 5)
+
+      assert {:ok, %Ecto.Changeset{}} =
+               Accounts.create_user(%{
+                 name: "some name",
+                 email: "some@email.com",
+                 password: short_password,
+                 password_confirmation: short_password
+               })
+    end
+
     test "update_user/2 with valid data updates the user" do
       user = user_fixture()
 
