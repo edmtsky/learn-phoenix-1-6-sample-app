@@ -1,9 +1,11 @@
 defmodule SampleAppWeb.UserController do
   use SampleAppWeb, :controller
   alias SampleApp.Accounts
+  alias SampleApp.Accounts.User
 
   def new(conn, _params) do
-    render(conn, "new.html")
+    changeset = Accounts.change_user(%User{})
+    render(conn, "new.html", changeset: changeset)
   end
 
   def show(conn, %{"id" => id}) do

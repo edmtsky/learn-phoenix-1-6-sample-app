@@ -301,3 +301,51 @@ add support for an optional size parameter
     img_tag(gravatar_url, alt: user.name, class: "gravatar")
   end
 ```
+
+
+### Using form_for
+
+`form_for` is a Phoenix helper function used for signup form.
+`form_for` takes three arguments: a `changeset`, a `path`, and an anonymous function.
+The anonymous function takes one argument, the form data we're labeling `f`.
+
+> lib/sample_app_web/controllers/user_controller.ex
+```elixir
+defmodule SampleAppWeb.UserController do
+  use SampleAppWeb, :controller
+  alias SampleApp.Accounts
+  alias SampleApp.Accounts.User                      # +
+
+  def new(conn, _params) do
+    changeset = Accounts.change_user(%User{})        # +
+    render(conn, "new.html", changeset: changeset)   # +
+  end
+
+  # ...
+end
+```
+
+> lib/sample_app_web/templates/user/new.html.heex
+```heex
+<h1>Sign up</h1>
+
+<div class="row">
+  <div class="mx-auto col-md-6 col-md-offset-3">
+    <%= form_for @changeset, Routes.user_path(@conn, :create), fn f -> %>
+      <%= label :user, :name %>
+      <%= text_input f, :name %>
+
+      <%= label :user, :email %>
+      <%= email_input f, :email %>
+
+      <%= label :user, :password %>
+      <%= password_input f, :password %>
+
+      <%= label :user, :password_confirmation, "Confirmation" %>
+      <%= password_input f, :password_confirmation %>
+
+      <%= submit "Create my account", class: "btn btn-primary" %>
+    <% end %>
+  </div>
+</div>
+```
