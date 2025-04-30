@@ -15,6 +15,7 @@
   <div class="container mt-4">
     <%= @inner_content %>
     <%= render "_footer.html", assigns %>
+    <%= render "_debug.html", assigns %>
   </div>
   <script type="text/javascript"
   src={ Routes.static_path(@conn, "/assets/app.js")}></script>
