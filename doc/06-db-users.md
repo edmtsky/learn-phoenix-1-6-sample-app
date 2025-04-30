@@ -627,3 +627,119 @@ Ecto.Adapters.SQL.Sandbox.mode(SampleApp.Repo, :manual)
 ```
 
 refactor all `Accounts` context tests to use ex_machina factory.
+
+
+### add Accounts.authenticate_by_email_and_pass
+
+```elixir
+  def authenticate_by_email_and_pass(email, given_pass) do
+    user = Repo.get_by(User, email: email)
+
+    cond do
+      user && Argon2.verify_pass(given_pass, user.password_hash) ->
+        {:ok, user}
+
+      user ->
+        {:error, :unauthorized}
+
+      true ->
+        Argon2.no_user_verify()
+        {:error, :not_found}
+    end
+  end
+```
+
+manual verification of creation and authenticate
+
+```elixir
+iex> alias SampleApp.Accounts
+SampleApp.Accounts
+iex> alias SampleApp.Accounts.User
+SampleApp.Accounts.User
+
+iex> Accounts.create_user(%{name: "John Doe", email: "john@example.com", password: "secret"})
+{:error,
+ #Ecto.Changeset<
+   action: :insert,
+   changes: %{email: "john@example.com", name: "John Doe", password: "secret"},
+   errors: [password_confirmation: {"can't be blank", [validation: :required]}],
+   data: #SampleApp.Accounts.User<>,
+   valid?: false
+ >}
+
+iex> Accounts.create_user(%{
+  name: "John Doe",
+  email: "john@example.com",
+  password: "secret", password_confirmation: "secret"})
+
+# [debug] QUERY OK db=20.8ms decode=4.9ms queue=0.6ms idle=1155.3ms
+# INSERT INTO "users" ("email","name","password_hash","inserted_at","updated_at") VALUES ($1,$2,$3,$4,$5) RETURNING "id" ["john@example.com", "John Doe", "$argon2id$v=19$m=131072,t=8,p=4$urP5DtLf1MtQebPuYlLbBA$5ej1EhFogZoi0sLHt3W2gyrFgL7PvAo0P+vi4csdEkQ", ~N[2025-04-30 06:42:42], ~N[2025-04-30 06:42:42]]
+{:ok,
+ %SampleApp.Accounts.User{
+   __meta__: #Ecto.Schema.Metadata<:loaded, "users">,
+   email: "john@example.com",
+   id: 2,
+   inserted_at: ~N[2025-04-30 06:42:42],
+   name: "John Doe",
+   password: "secret",
+   password_confirmation: "secret",
+   password_hash: "$argon2id$v=19$m=131072,t=8,p=4$urP5DtLf1MtQebPuYlLbBA$5ej1EhFogZoi0sLHt3W2gyrFgL7PvAo0P+vi4csdEkQ",
+   updated_at: ~N[2025-04-30 06:42:42]
+ }}
+
+iex> Accounts.authenticate_by_email_and_pass("john@example.com", "secret")
+# [debug] QUERY OK source="users" db=0.6ms queue=0.5ms idle=1494.3ms
+# SELECT u0."id", u0."email", u0."name", u0."password_hash", u0."inserted_at", u0."updated_at" FROM "users" AS u0 WHERE (u0."email" = $1) ["john@example.com"]
+{:ok,
+ %SampleApp.Accounts.User{
+   __meta__: #Ecto.Schema.Metadata<:loaded, "users">,
+   email: "john@example.com",
+   id: 2,
+   inserted_at: ~N[2025-04-30 06:42:42],
+   name: "John Doe",
+   password: nil,
+   password_confirmation: nil,
+   password_hash: "$argon2id$v=19$m=131072,t=8,p=4$urP5DtLf1MtQebPuYlLbBA$5ej1EhFogZoi0sLHt3W2gyrFgL7PvAo0P+vi4csdEkQ",
+   updated_at: ~N[2025-04-30 06:42:42]
+ }}
+```
+
+to cleanup whole database:
+```sh
+mix ecto.reset
+```
+when your dbuser has no permission to create a database:
+
+The database for SampleApp.Repo has been dropped
+** (Mix) The database for SampleApp.Repo couldn't be created: ERROR 42501 (insufficient_privilege) permission denied to create database
+
+
+how to fix:
+
+```sql
+CREATE DATABASE sample_app_dev WITH OWNER dbuser;
+```
+
+```sh
+mix ecto.migrate
+
+# 09:49:16.524 [info]  == Running 20250428123403 SampleApp.Repo.Migrations.CreateUsers.change/0 forward
+#
+# 09:49:16.536 [info]  create table users
+#
+# 09:49:16.619 [info]  == Migrated 20250428123403 in 0.0s
+#
+# 09:49:16.714 [info]  == Running 20250429170756 SampleApp.Repo.Migrations.AddUniqueIndexToUsersEmail.change/0 forward
+#
+# 09:49:16.714 [info]  create index users_email_index
+#
+# 09:49:16.766 [info]  == Migrated 20250429170756 in 0.0s
+#
+# 09:49:16.781 [info]  == Running 20250430042846 SampleApp.Repo.Migrations.AddPasswordHashToUsers.change/0 forward
+#
+# 09:49:16.781 [info]  alter table users
+#
+# 09:49:16.782 [info]  == Migrated 20250430042846 in 0.0s
+```
+
+

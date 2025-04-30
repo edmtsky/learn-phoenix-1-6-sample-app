@@ -2,11 +2,10 @@ defmodule SampleApp.AccountsTest do
   use SampleApp.DataCase
 
   alias SampleApp.Accounts
+  alias SampleApp.Accounts.User
+  alias SampleApp.Factory
 
   describe "users" do
-    alias SampleApp.Accounts.User
-    alias SampleApp.Factory
-
     @valid_attrs %{
       name: "Example User",
       email: "user@example.com",
@@ -225,6 +224,36 @@ defmodule SampleApp.AccountsTest do
     test "change_user/1 returns a user changeset" do
       user = Factory.insert(:user)
       assert %Ecto.Changeset{} = Accounts.change_user(user)
+    end
+  end
+
+  describe "authenticate_by_email_and_pass/2" do
+    @email "user@example.com"
+    @password "123456"
+
+    setup do
+      {:ok,
+       user:
+         Factory.insert(:user,
+           email: @email,
+           password: @password,
+           password_hash: Argon2.hash_pwd_salt(@password)
+         )}
+    end
+
+    test "returns user with correct password", %{user: %User{id: id}} do
+      res = Accounts.authenticate_by_email_and_pass(@email, @password)
+      assert {:ok, %User{id: ^id}} = res
+    end
+
+    test "returns unauthorized error with invalid password" do
+      assert {:error, :unauthorized} =
+               Accounts.authenticate_by_email_and_pass(@email, "badpassword")
+    end
+
+    test "returns not found error with no matching user for email" do
+      assert {:error, :not_found} =
+               Accounts.authenticate_by_email_and_pass("bad@email.com", @pass)
     end
   end
 end

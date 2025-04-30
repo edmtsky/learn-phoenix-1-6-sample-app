@@ -18,3 +18,5 @@
   - Adding a secure password
     - initial password system (to store hashes of the passwords)
     - minimal password length
+    - add ex_machina
+    - add Accounts.authenticate_by_email_and_pass
