@@ -51,6 +51,7 @@ defmodule SampleApp.MixProject do
       {:plug_cowboy, "2.5.2"},
       {:html_assertion, "0.1.5", only: :test},
       {:mix_test_watch, "1.1.0"},
+      {:argon2_elixir, "2.4.0"},
       {:pgpass, git: "https://github.com/edmtsky/pgpass.git", tag: "0.1.1"},
 
       # transitive

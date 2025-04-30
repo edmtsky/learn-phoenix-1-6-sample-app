@@ -11,3 +11,9 @@
   - use the named routes in the site layout
   - layout link tests (integration(for links) and unit (for typo in title))
   - and signup route: add User controller and :new action
+
+- modeling users
+  - User schema and the Accounts context
+  - ecto changesets and validations
+  - Adding a secure password
+    - initial password system (to store hashes of the passwords)

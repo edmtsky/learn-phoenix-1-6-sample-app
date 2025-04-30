@@ -432,3 +432,107 @@ defmodule SampleApp.Accounts.User do
     |> unique_constraint(:email)                           # <<< +
   end
 ```
+
+
+
+### Adding a secure password
+
+supplied the User schema with the `password_hash` field and install `Argon2`
+
+```sh
+mix ecto.gen.migration add_password_hash_to_users
+* creating priv/repo/migrations/20250430042846_add_password_hash_to_users.exs
+```
+
+priv/repo/migrations/20250430042846_add_password_hash_to_users.exs
+```elixir
+defmodule SampleApp.Repo.Migrations.AddPasswordHashToUsers do
+  use Ecto.Migration
+
+  def change do
+    alter table(:users) do
+      add :password_hash, :string, default: "", null: false
+    end
+  end
+end
+```
+
+```sh
+mix ecto.migrate
+
+# 07:31:51.892 [info]  == Running 20250430042846 SampleApp.Repo.Migrations.AddPasswordHashToUsers.change/0 forward
+#
+# 07:31:51.902 [info]  alter table users
+#
+# 07:31:51.907 [info]  == Migrated 20250430042846 in 0.0s
+```
+
+add dep:
+```elixir
+      {:argon2_elixir, "2.4.0"},
+```
+
+```sh
+mix deps.get
+
+# ...
+# New:
+#   argon2_elixir 2.4.0
+#   comeonin 5.5.1
+#   elixir_make 0.9.0
+# * Getting argon2_elixir (Hex package)
+# * Getting comeonin (Hex package)
+# * Getting elixir_make (Hex package)
+```
+
+
+implement password system with the help of virtual fields:
+
+> lib/sample_app/accounts/user.ex
+```elixir
+defmodule SampleApp.Accounts.User do
+  use Ecto.Schema
+  import Ecto.Changeset
+
+  @valid_email_regex ~r/\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
+  @required_fields [:name, :email, :password, :password_confirmation]     # <<<
+
+  schema "users" do
+    field :email, :string
+    field :name, :string
+    field :password_hash, :string                              # +
+    timestamps()
+    field :password, :string, virtual: true                    # +
+    field :password_confirmation, :string, virtual: true       # +
+  end
+
+  @doc false
+  def changeset(user, attrs) do
+    user
+    |> cast(attrs, @required_fields)                           # +
+    |> validate_required(@required_fields)                     # +
+    |> validate_length(:name, max: 50)
+    |> validate_length(:email, max: 255)
+    |> validate_format(:email, @valid_email_regex)
+    |> validate_confirmation(:password, message: "does not match password") # +
+    |> update_change(:email, &String.downcase/1)
+    |> unique_constraint(:email)
+    |> put_password_hash()                                     # +
+  end
+
+  # new:
+  defp put_password_hash(changeset) do
+    case changeset do
+      %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
+        if password do
+          put_change(changeset, :password_hash, Argon2.hash_pwd_salt(password))
+        else
+          changeset
+        end
+      _ ->
+        changeset
+    end
+  end
+end
+```
+

@@ -12,7 +12,9 @@ defmodule SampleApp.AccountsFixtures do
       attrs
       |> Enum.into(%{
         email: "some@email.com",
-        name: "some name"
+        name: "some name",
+        password: "secret",
+        password_confirmation: "secret"
       })
       |> SampleApp.Accounts.create_user()
 

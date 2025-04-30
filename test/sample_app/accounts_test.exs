@@ -11,17 +11,18 @@ defmodule SampleApp.AccountsTest do
     @invalid_attrs %{email: nil, name: nil}
 
     test "list_users/0 returns all users" do
-      user = user_fixture()
+      %User{id: id1} = user_fixture()
 
-      user2 = user_fixture(%{email: "email2@example.com"})
+      %User{id: id2} = user_fixture(%{email: "email2@example.com"})
 
-      assert Accounts.list_users() == [user, user2]
+      assert [%User{id: ^id1}, %User{id: ^id2}] = Accounts.list_users()
     end
 
     # describe "get_user!/1" do
     test "get_user!/1 returns the user with given id" do
       user = user_fixture()
-      assert Accounts.get_user!(user.id) == user
+      assert Accounts.get_user!(user.id) != nil
+      assert Accounts.get_user!(user.id).id == user.id
     end
 
     test "get_user!/1 returns nil if the user is not found" do
@@ -36,8 +37,8 @@ defmodule SampleApp.AccountsTest do
 
     # describe "get_user/1" do
     test "get_user/1 returns the user with given id" do
-      user = user_fixture()
-      assert Accounts.get_user(user.id) == user
+      %User{id: id} = user_fixture()
+      assert %User{id: ^id} = Accounts.get_user(id)
     end
 
     # assert %User{} = Accounts.get_user(user.id)
@@ -73,7 +74,12 @@ defmodule SampleApp.AccountsTest do
     end
 
     test "create_user/1 with valid data creates a user" do
-      valid_attrs = %{email: "some@email.com", name: "some name"}
+      valid_attrs = %{
+        name: "some name",
+        email: "some@email.com",
+        password: "secret",
+        password_confirmation: "secret"
+      }
 
       assert {:ok, %User{} = user} = Accounts.create_user(valid_attrs)
       assert user.email == "some@email.com"
@@ -85,21 +91,34 @@ defmodule SampleApp.AccountsTest do
     end
 
     test "create_user/1 name left blank does not insert user" do
-      bad_user_attrs = %{email: "some email", name: "      "}
+      bad_user_attrs = %{
+        name: "      ",
+        email: "some email",
+        password: "secret",
+        password_confirmation: "secret"
+      }
 
       assert {:error, %Ecto.Changeset{}} = Accounts.create_user(bad_user_attrs)
     end
 
     test "create_user/1 email left blank does not insert user" do
-      bad_user_attrs = %{email: "   ", name: "some name"}
+      bad_user_attrs = %{
+        email: "   ",
+        name: "some name",
+        password: "secret",
+        password_confirmation: "secret"
+      }
+
       assert {:error, %Ecto.Changeset{}} = Accounts.create_user(bad_user_attrs)
     end
 
     test "create_user/1 name too long does not insert user" do
       assert {:error, %Ecto.Changeset{}} =
                Accounts.create_user(%{
+                 name: String.duplicate("a", 51),
                  email: "some email",
-                 name: String.duplicate("a", 51)
+                 password: "secret",
+                 password_confirmation: "secret"
                })
     end
 
@@ -107,7 +126,9 @@ defmodule SampleApp.AccountsTest do
       assert {:error, %Ecto.Changeset{}} =
                Accounts.create_user(%{
                  name: "some name",
-                 email: String.duplicate("a", 244) <> "@example.com"
+                 email: String.duplicate("a", 244) <> "@example.com",
+                 password: "secret",
+                 password_confirmation: "secret"
                })
     end
 
@@ -124,7 +145,9 @@ defmodule SampleApp.AccountsTest do
         assert {:ok, %User{}} =
                  Accounts.create_user(%{
                    name: "some name",
-                   email: valid_address
+                   email: valid_address,
+                   password: "secret",
+                   password_confirmation: "secret"
                  })
       end
     end
@@ -142,7 +165,9 @@ defmodule SampleApp.AccountsTest do
         assert {:error, %Ecto.Changeset{}} =
                  Accounts.create_user(%{
                    name: "some name",
-                   email: invalid_address
+                   email: invalid_address,
+                   password: "secret",
+                   password_confirmation: "secret"
                  })
       end
     end
@@ -153,7 +178,9 @@ defmodule SampleApp.AccountsTest do
       assert {:error, %Ecto.Changeset{}} =
                Accounts.create_user(%{
                  name: user.name,
-                 email: String.upcase(user.email)
+                 email: String.upcase(user.email),
+                 password: "secret",
+                 password_confirmation: "secret"
                })
     end
 
@@ -161,12 +188,23 @@ defmodule SampleApp.AccountsTest do
       mixed_case_email = "Foo@ExAMPle.CoM"
 
       assert {:ok, %User{email: "foo@example.com"}} =
-               Accounts.create_user(%{name: "some name", email: mixed_case_email})
+               Accounts.create_user(%{
+                 name: "some name",
+                 email: mixed_case_email,
+                 password: "secret",
+                 password_confirmation: "secret"
+               })
     end
 
     test "update_user/2 with valid data updates the user" do
       user = user_fixture()
-      update_attrs = %{email: "some-updated@email.com", name: "some updated name"}
+
+      update_attrs = %{
+        email: "some-updated@email.com",
+        name: "some updated name",
+        password: "secret",
+        password_confirmation: "secret"
+      }
 
       assert {:ok, %User{} = user} = Accounts.update_user(user, update_attrs)
       assert user.email == "some-updated@email.com"
@@ -174,9 +212,9 @@ defmodule SampleApp.AccountsTest do
     end
 
     test "update_user/2 with invalid data returns error changeset" do
-      user = user_fixture()
+      user = %User{id: id} = user_fixture()
       assert {:error, %Ecto.Changeset{}} = Accounts.update_user(user, @invalid_attrs)
-      assert user == Accounts.get_user!(user.id)
+      assert %User{id: ^id} = Accounts.get_user!(user.id)
     end
 
     test "delete_user/1 deletes the user" do
