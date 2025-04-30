@@ -1,3 +1,5 @@
+# Make an Accounts context and User schema with secure passwords.
+
 ## Add the data model for Users
 
 A mockup of the user signup page.
@@ -742,4 +744,16 @@ mix ecto.migrate
 # 09:49:16.782 [info]  == Migrated 20250430042846 in 0.0s
 ```
 
+
+## learned things:
+
+- Migrations allow us to modify our application's data schema.
+- Ecto provides many functions for creating and manipulating data schema.
+- Ecto validations allow us to place constraints on the data in our schemas.
+- Common validations include required, length, and format.
+- Regular expressions are cryptic but powerful.
+- Defining a database index improves lookup efficiency
+  while allowing enforcement of uniqueness at the database level.
+- We can implement a secure password for a schema
+  using a strong hashing algorithm like `Argon2`.
 
