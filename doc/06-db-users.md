@@ -541,3 +541,89 @@ end
 
 - password: {"should be at least %{count} character(s)"
 - password_confirmation: {"can't be blank", ..
+
+
+
+### ExMachina package
+
+package `ExMachina` works great with `Ecto` and
+makes it easy to create test data associations.
+mix.exs
+```elixir
+  {:ex_machina, "2.7.0", only: :test}
+```
+
+> Note:
+  The original generated `Account` context test had a `user_fixture` function,
+  that uses the `Accounts.create_user` function to create test user data.
+  That seems like a good pattern to follow at first, but
+  if you change how `Accounts.create_user` works
+  and it happens to be buggy, a lot of tests will break.
+
+  It might seem you did a lot for so little, but
+  when you are inserting many different test data,
+  `ExMachina` will save you a headache.
+
+
+
+`ExMachina` calls the generators for test data _factories_.
+
+
+create a `Factory` module
+which will includes all our factories separated in individual files
+
+> test/support/factory.ex
+```elixir
+defmodule SampleApp.Factory do
+  use ExMachina.Ecto, repo: SampleApp.Repo
+  use SampleApp.UserFactory
+end
+```
+
+create a `User` factory so we can create test users
+
+> test/factories/user_factory.ex
+```elixir
+defmodule SampleApp.UserFactory do
+  defmacro __using__(_opts) do
+    quote do
+      def user_factory do
+        %SampleApp.Accounts.User{
+          name: sequence(:name, &"Example User#{&1}"),
+          email: sequence(:email, &"user-#{&1}@example.com"),
+          password: "password",
+          password_confirmation: "password",
+          password_hash: Argon2.hash_pwd_salt("password")
+        }
+      end
+    end
+  end
+end
+```
+
+update `mix.exs` file to compile factory files in `test/factories/` -
+adding the `test/factories/` path to the `elixirc_paths`:
+
+> mix.exs
+```elixir
+  # ...
+
+  # Specifies which paths to compile per environment.
+  defp elixirc_paths(:test), do: ["lib", "test/support", "test/factories"] # <<
+  #                                                       ^^^^^^^^^^^^^^
+  defp elixirc_paths(_), do: ["lib"]
+
+  # ...
+```
+
+
+start the `ex_machina` application in `test/test_helper.exs`
+
+> test/test_helper.exs
+```elixir
+{:ok, _} = Application.ensure_all_started(:ex_machina)                     # +
+ExUnit.start()
+Ecto.Adapters.SQL.Sandbox.mode(SampleApp.Repo, :manual)
+```
+
+refactor all `Accounts` context tests to use ex_machina factory.

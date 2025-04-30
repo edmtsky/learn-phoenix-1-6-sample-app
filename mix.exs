@@ -25,7 +25,7 @@ defmodule SampleApp.MixProject do
   end
 
   # Specifies which paths to compile per environment.
-  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(:test), do: ["lib", "test/support", "test/factories"]
   defp elixirc_paths(_), do: ["lib"]
 
   # Specifies your project dependencies.
@@ -52,6 +52,7 @@ defmodule SampleApp.MixProject do
       {:html_assertion, "0.1.5", only: :test},
       {:mix_test_watch, "1.1.0"},
       {:argon2_elixir, "2.4.0"},
+      {:ex_machina, "2.7.0", only: :test},
       {:pgpass, git: "https://github.com/edmtsky/pgpass.git", tag: "0.1.1"},
 
       # transitive
