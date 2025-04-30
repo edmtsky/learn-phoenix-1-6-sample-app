@@ -1,6 +1,9 @@
 run:
 	mix phx.server
 
+run-iex:
+	iex -S mix phx.server
+
 test:
 	mix test
 
