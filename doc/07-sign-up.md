@@ -245,3 +245,59 @@ iex(1)> warning: the underscored variable "_params" is used after being set. A l
 ```
 
 
+### Gavatar image and sidebar
+
+old:
+```heex
+<%= @user.name %>, <%= @user.email %>
+<div>
+  <div>created: <%= @user.inserted_at %> </div>
+  <div>updated: <%= @user.updated_at %> </div>
+  <div>now: <%= NaiveDateTime.utc_now() %></div>
+</div>
+```
+
+new
+```heex
+<div class="row">
+  <aside class="col-md-4">
+    <section class="user_info">
+      <h1>
+        <%= gravatar_for(@user) %>
+        <%= @user.name %>
+      </h1>
+    </section>
+  </aside>
+</div>
+```
+
+
+
+```elixir
+defmodule SampleAppWeb.UserView do
+  use SampleAppWeb, :view
+
+  defp md5_hexdigest(str) do
+    :crypto.hash(:md5, str)
+    |> Base.encode16(case: :lower)
+  end
+
+  # Returns the Gravatar for the given user.
+  def gravatar_for(user) do
+    gravatar_id = String.downcase(user.email) |> md5_hexdigest()
+    gravatar_url = ["https://secure.gravatar.com/avatar/", gravatar_id]
+    img_tag(gravatar_url, alt: user.name, class: "gravatar")
+  end
+```
+
+add support for an optional size parameter
+
+```elixir
+  def gravatar_for(user, options \\ []) do                                 # *
+    gravatar_id = String.downcase(user.email) |> md5_hexdigest()
+    size = Keyword.get(options, :size, 80) |> to_string()                  # +
+    gravatar_url = ["https://secure.gravatar.com/avatar/",                 # +
+                    gravatar_id, "?s=", size]                              # +
+    img_tag(gravatar_url, alt: user.name, class: "gravatar")
+  end
+```

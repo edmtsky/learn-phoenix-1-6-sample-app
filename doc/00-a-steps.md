@@ -24,3 +24,4 @@
 - sign-up
   - debug information
   - Users resource
+  - Gravatar image and sidebar
