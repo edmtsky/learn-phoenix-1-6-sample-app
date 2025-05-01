@@ -3,18 +3,31 @@
 <div class="row">
   <div class="mx-auto col-md-6 col-md-offset-3">
     <%= form_for @changeset, Routes.user_path(@conn, :create), fn f -> %>
-      <%= label :user, :name %>
-      <%= text_input f, :name %>
+      <%= if @changeset.action, do: error_count_tag f %>
 
-      <%= label :user, :email %>
-      <%= email_input f, :email %>
+      <div class="form-group">
+        <%= label :user, :name %>
+        <%= text_input f, :name, class: "form-control" %>
+        <%= error_tag f, :name %>
+      </div>
 
-      <%= label :user, :password %>
-      <%= password_input f, :password %>
+      <div class="form-group">
+        <%= label :user, :email %>
+        <%= email_input f, :email, class: "form-control" %>
+        <%= error_tag f, :email %>
+      </div>
 
-      <%= label :user, :password_confirmation, "Confirmation" %>
-      <%= password_input f, :password_confirmation %>
+      <div class="form-group">
+        <%= label :user, :password %>
+        <%= password_input f, :password, class: "form-control" %>
+        <%= error_tag f, :password %>
+      </div>
 
+      <div class="form-group">
+        <%= label :user, :password_confirmation, "Confirmation" %>
+        <%= password_input f, :password_confirmation, class: "form-control" %>
+        <%= error_tag f, :password_confirmation %>
+      </div>
       <%= submit "Create my account", class: "btn btn-primary" %>
     <% end %>
   </div>

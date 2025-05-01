@@ -349,3 +349,133 @@ end
   </div>
 </div>
 ```
+
+
+### Signup error messages
+
+`resources "/users", UserController`  - add RESTful actions, in particular
+on `POST /users` it will be call :create action in the controller, so:
+
+```elixir
+defmodule SampleAppWeb.UserController do
+  use SampleAppWeb, :controller
+  alias SampleApp.Accounts
+  alias SampleApp.Accounts.User
+
+  # ...
+
+  # to handle POST /users (submite signup form)
+  def create(conn, %{"user" => user_params}) do            # << ++
+    case Accounts.create_user(user_params) do
+      {:ok, _user} ->
+        conn
+
+      # Handle a successful User insertion.
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, "new.html", changeset: changeset)
+    end
+  end
+
+  # ...
+end
+```
+
+add error_count_tag
+
+> lib/sample_app_web/views/error_helpers.ex
+```elixir
+defmodule SampleAppWeb.ErrorHelpers do
+  @moduledoc """
+  Conveniences for translating and building error messages.
+  """
+
+  use Phoenix.HTML
+
+  def error_count_tag(form) do                                              # +
+    error_count = Enum.count(form.errors)                                   # +
+
+    content = [                                                             # +
+      "The form contains ",                                                 # +
+      Gettext.ngettext(SampleAppWeb.Gettext, "1 error", "%{count} errors",  # +
+      error_count),                                                         # +
+      "."
+    ]
+
+    content_tag(:div, content, class: "alert alert-danger")                 # +
+  end                                                                       # +
+
+  @doc """
+  Generates tag for inlined form input errors.
+  """
+  def error_tag(form, field) do
+    Enum.map(Keyword.get_values(form.errors, field), fn error ->
+      content_tag(:span, translate_error(error),
+        class: "invalid-feedback",
+        phx_feedback_for: input_name(form, field)
+      )
+    end)
+  end
+  # ...
+end
+```
+
+example of how to handle pluralization of words:
+
+```elixir
+iex> Gettext.ngettext(SampleAppWeb.Gettext, "1 error", "%{count} errors", 1)
+"1 error"
+
+iex> Gettext.ngettext(SampleAppWeb.Gettext, "1 error", "%{count} errors", 5)
+"5 errors"
+
+iex> Gettext.ngettext(SampleAppWeb.Gettext, "1 woman", "%{count} women", 2)
+"2 women"
+
+iex> Gettext.ngettext(SampleAppWeb.Gettext, "1 erratum", "%{count} errata", 3)
+"3 errata"
+```
+
+
+add code to display error messages on the signup form:
+
+> lib/sample_app_web/templates/user/new.html.heex
+```heex
+<h1>Sign up</h1>
+
+<div class="row">
+  <div class="mx-auto col-md-6 col-md-offset-3">
+    <%= form_for @changeset, Routes.user_path(@conn, :create), fn f -> %>
+      <%= if @changeset.action, do: error_count_tag f %>
+
+      <div class="form-group">
+        <%= label :user, :name %>
+        <%= text_input f, :name, class: "form-control" %>
+        <!--                     ^^^^^^^^^^^^^^^^^^^^ -->
+        <%= error_tag f, :name %>                                  <!-- <<< -->
+      </div>
+
+      <div class="form-group">
+        <%= label :user, :email %>
+        <%= email_input f, :email, class: "form-control" %>
+        <!--                       ^^^^^^^^^^^^^^^^^^^^ -->
+        <%= error_tag f, :email %>                                 <!-- <<< -->
+      </div>
+
+      <div class="form-group">
+        <%= label :user, :password %>
+        <%= password_input f, :password, class: "form-control" %>
+        <!--                             ^^^^^^^^^^^^^^^^^^^^ -->
+        <%= error_tag f, :password %>                              <!-- <<< -->
+      </div>
+
+      <div class="form-group">
+        <%= label :user, :password_confirmation, "Confirmation" %>
+        <%= password_input f, :password_confirmation, class: "form-control" %>
+        <!--                                          ^^^^^^^^^^^^^^^^^^^^ -->
+        <%= error_tag f, :password_confirmation %>                <!-- <<< -->
+      </div>
+      <%= submit "Create my account", class: "btn btn-primary" %>
+    <% end %>
+  </div>
+</div>
+```

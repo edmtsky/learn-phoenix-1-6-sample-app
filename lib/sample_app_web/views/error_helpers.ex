@@ -5,6 +5,18 @@ defmodule SampleAppWeb.ErrorHelpers do
 
   use Phoenix.HTML
 
+  def error_count_tag(form) do
+    error_count = Enum.count(form.errors)
+
+    content = [
+      "The form contains ",
+      Gettext.ngettext(SampleAppWeb.Gettext, "1 error", "%{count} errors", error_count),
+      "."
+    ]
+
+    content_tag(:div, content, class: "alert alert-danger")
+  end
+
   @doc """
   Generates tag for inlined form input errors.
   """
