@@ -2,6 +2,7 @@ defmodule SampleAppWeb.UserController do
   use SampleAppWeb, :controller
   alias SampleApp.Accounts
   alias SampleApp.Accounts.User
+  alias SampleAppWeb.AuthPlug
 
   def new(conn, _params) do
     changeset = Accounts.change_user(%User{})
@@ -18,6 +19,7 @@ defmodule SampleAppWeb.UserController do
     case Accounts.create_user(user_params) do
       {:ok, user} ->
         conn
+        |> AuthPlug.login(user)
         |> put_flash(:success, "Welcome to the Sample App!")
         |> redirect(to: Routes.user_path(conn, :show, user))
 

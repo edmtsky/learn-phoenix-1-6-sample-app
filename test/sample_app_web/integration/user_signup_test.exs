@@ -1,6 +1,7 @@
 defmodule SampleAppWeb.UserSignupTest do
   use SampleAppWeb.ConnCase, async: true
   alias SampleAppWeb.Endpoint
+  # alias SampleAppWeb.AuthPlug
 
   test "invalid signup information", %{conn: conn} do
     user_records_before = Repo.one(from u in User, select: count())
@@ -51,6 +52,10 @@ defmodule SampleAppWeb.UserSignupTest do
     user = Repo.get_by(User, email: user_email)
     assert redirected_to(conn) == Routes.user_path(conn, :show, user)
 
+    # login upon signup:
+    assert is_logged_in?(conn)
+
+    # no flash error messages
     refute Enum.empty?(get_flash(conn))
 
     # jump by redirect to check out the flash message

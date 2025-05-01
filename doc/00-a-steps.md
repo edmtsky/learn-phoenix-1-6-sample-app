@@ -39,3 +39,4 @@
     - Authentication Plug
     - AuthPlug.login
     - changing the layout links with tests
+    - login upon signup
