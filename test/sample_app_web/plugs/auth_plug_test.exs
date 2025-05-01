@@ -30,4 +30,16 @@ defmodule SampleAppWeb.AuthPlugTest do
       assert conn.assigns.current_user == nil
     end
   end
+
+  describe "login/2" do
+    test "puts the user id in the session", %{conn: conn} do
+      login_conn =
+        conn
+        |> AuthPlug.login(%User{id: 5})
+        |> send_resp(:ok, "")
+
+      next_conn = get(login_conn, "/")
+      assert get_session(next_conn, :user_id) == 5
+    end
+  end
 end

@@ -37,4 +37,5 @@
     - find and authenticate a user with a flash message
   - loggin in
     - Authentication Plug
+    - AuthPlug.login
 

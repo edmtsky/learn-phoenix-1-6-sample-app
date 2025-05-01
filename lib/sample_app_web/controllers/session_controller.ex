@@ -8,8 +8,11 @@ defmodule SampleAppWeb.SessionController do
 
   def create(conn, %{"session" => %{"email" => email, "password" => pass }}) do
     case Accounts.authenticate_by_email_and_pass(String.downcase(email), pass) do
-      {:ok, _user} ->
+      {:ok, user} ->
         conn
+        |> AuthPlug.login(user)
+        |> put_flash(:success, "Welcome to the Sample App!")
+        |> redirect(to: Routes.user_path(conn, :show, user))
 
       # Log the user in and redirect to the user's show page.
       {:error, _reason} ->
