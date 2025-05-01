@@ -27,6 +27,7 @@ defmodule SampleAppWeb.ConnCase do
       alias SampleAppWeb.Router.Helpers, as: Routes
       use HTMLAssertion
       import Ecto.Query
+      import SampleAppWeb.ConnTestHelpers                          # +
       alias SampleApp.Factory
       alias SampleApp.Repo
       alias SampleApp.Accounts

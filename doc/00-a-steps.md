@@ -38,4 +38,4 @@
   - loggin in
     - Authentication Plug
     - AuthPlug.login
-    - changing the layout links
+    - changing the layout links with tests

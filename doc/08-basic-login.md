@@ -191,3 +191,34 @@ add links for:
 ```
 
 dropdown menus made by Bootstrap's CSS classes such as `dropdown` `dropdown-menu`
+
+
+### Testing layout changes
+
+a series of steps to verify the following sequence of actions:
+
+1. Visit the login path.
+2. Post valid information to the sessions path.
+3. Verify that the login link disappears.
+4. Verify that a logout link appears.
+5. Verify that a profile link appears.
+
+
+to check logging in redirects to the user show page:
+```elixir
+assert redir_path = redirected_to(conn) == Routes.user_path(conn, :show, user)
+```
+
+Убедитесь, что ссылка входа в систему исчезает, подтверждая, что на странице
+нет ссылок пути входа в систему:
+verify the login link disappears
+(there are no login path links on the page)
+```elixir
+|> refute_select("a[href='#{Routes.login_path(conn, :new)}']")
+```
+
+Because the application code was already working, this test should be GREEN:
+Listing_8_24: GREEN
+```sh
+mix test test/sample_app_web/integration/user_login_test.exs
+```

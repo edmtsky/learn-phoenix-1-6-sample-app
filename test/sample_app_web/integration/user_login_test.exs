@@ -1,0 +1,57 @@
+defmodule SampleAppWeb.UserLoginTest do
+  use SampleAppWeb.ConnCase, async: true
+
+  setup do
+    {:ok, user: Factory.insert(:user)}
+  end
+
+  test "login with valid information", %{conn: conn, user: user} do
+    conn =
+      conn
+      |> get(Routes.login_path(conn, :new))
+      |> post(Routes.login_path(conn, :create), %{
+        session: %{
+          email: user.email,
+          password: "password"
+        }
+      })
+
+    assert is_logged_in?(conn)
+
+    assert redir_path =
+             redirected_to(conn) ==
+               Routes.user_path(conn, :show, user)
+
+    conn = get(recycle(conn), redir_path)
+
+    html_response(conn, 200)
+    |> refute_select("a[href='#{Routes.login_path(conn, :new)}']")
+    |> assert_select("a[href='#{Routes.logout_path(conn, :delete)}']")
+    |> assert_select("a[href='#{Routes.user_path(conn, :show, user)}']")
+  end
+
+  test "login with invalid information", %{conn: conn} do
+    conn = get(conn, Routes.login_path(conn, :new))
+
+    html_response(conn, 200)
+    |> assert_select("form[action='#{Routes.login_path(conn, :create)}']")
+
+    conn =
+      post(conn, Routes.login_path(conn, :create), %{
+        session: %{
+          email: "",
+          password: ""
+        }
+      })
+
+    html_response(conn, 200)
+    |> assert_select("form[action='#{Routes.login_path(conn, :create)}']")
+
+    # has error messages
+    refute Enum.empty?(get_flash(conn))
+    # assert get_flash(conn) == %{"danger" => "Invalid email/password combination"}
+
+    conn = get(conn, Routes.root_path(conn, :home))
+    assert Enum.empty?(get_flash(conn))
+  end
+end
