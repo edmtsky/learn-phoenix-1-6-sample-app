@@ -630,3 +630,24 @@ can be replaces with:
 ```heex
       <%= content_tag(:div, message, class: "alert alert-#{message_type}") %>
 ```
+
+
+### learned things:
+
+- You can display debug information using the `inspect` function.
+- Sass mixins allow a group of CSS rules to be bundled and
+  reused in multiple places.
+- Phoenix comes with three standard environments:
+  development, test, and production.
+- We can interact with users as a resource through a standard set of REST URLs.
+- Gravatars provide a convenient way of displaying images to represent users.
+- The `form_for` helper is used to generate forms
+  for interacting with Ecto changesets.
+- Signup failure renders the new user page and
+  displays error messages automatically determined by the Ecto changeset.
+- Phoenix provides the flash as a standard way to display temporary messages.
+- Signup success creates a user in the database
+  then redirects to the user show page and displays a welcome message.
+- We can use integration tests to verify form submission behavior and
+  catch regressions.
+
