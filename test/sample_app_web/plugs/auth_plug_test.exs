@@ -42,4 +42,17 @@ defmodule SampleAppWeb.AuthPlugTest do
       assert get_session(next_conn, :user_id) == 5
     end
   end
+
+  describe "logout/1" do
+    test "drops the session", %{conn: conn} do
+      logout_conn =
+        conn
+        |> put_session(:user_id, 5)
+        |> AuthPlug.logout()
+        |> send_resp(:ok, "")
+
+      next_conn = get(logout_conn, "/")
+      refute get_session(next_conn, :user_id)
+    end
+  end
 end

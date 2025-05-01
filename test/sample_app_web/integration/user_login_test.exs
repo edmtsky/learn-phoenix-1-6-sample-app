@@ -54,4 +54,50 @@ defmodule SampleAppWeb.UserLoginTest do
     conn = get(conn, Routes.root_path(conn, :home))
     assert Enum.empty?(get_flash(conn))
   end
+
+  # singup, login, logout
+  test "login with valid information followed by logout",
+       %{conn: conn, user: user} do
+    # signup + login
+    conn =
+      conn
+      |> get(Routes.login_path(conn, :new))
+      |> post(Routes.login_path(conn, :create), %{
+        session: %{
+          email: user.email,
+          password: "password"
+        }
+      })
+
+    assert is_logged_in?(conn)
+
+    assert redir_path =
+             redirected_to(conn) ==
+               Routes.user_path(conn, :show, user)
+
+    # redirect to profile page
+    conn = get(recycle(conn), redir_path)
+
+    html_response(conn, 200)
+    # no log-in link
+    |> refute_select("a[href='#{Routes.login_path(conn, :new)}']")
+    # has logout link
+    |> assert_select("a[href='#{Routes.logout_path(conn, :delete)}']")
+    # has profile link
+    |> assert_select("a[href='#{Routes.user_path(conn, :show, user)}']")
+
+    # /logout
+    conn = delete(conn, Routes.logout_path(conn, :delete))
+    refute is_logged_in?(conn)
+
+    # ensure redirect to root(home) page
+    assert redir_path = redirected_to(conn) == Routes.root_path(conn, :home)
+    conn = get(recycle(conn), redir_path)
+
+    html_response(conn, 200)
+    # has only log-in link, no profile and logout links
+    |> assert_select("a[href='#{Routes.login_path(conn, :new)}']")
+    |> refute_select("a[href='#{Routes.logout_path(conn, :delete)}']")
+    |> refute_select("a[href='#{Routes.user_path(conn, :show, user)}']")
+  end
 end

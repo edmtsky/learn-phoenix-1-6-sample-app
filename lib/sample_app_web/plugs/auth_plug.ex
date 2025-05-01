@@ -17,4 +17,10 @@ defmodule SampleAppWeb.AuthPlug do
     |> put_session(:user_id, user.id)
     |> configure_session(renew: true)
   end
+
+  def logout(conn) do
+    conn
+    |> configure_session(drop: true)
+    |> assign(:current_user, nil)
+  end
 end

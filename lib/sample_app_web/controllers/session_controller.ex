@@ -24,6 +24,9 @@ defmodule SampleAppWeb.SessionController do
     end
   end
 
-  def delete(_conn, _params) do
+  def delete(conn, _params) do
+    conn
+    |> AuthPlug.logout()
+    |> redirect(to: Routes.root_path(conn, :home))
   end
 end

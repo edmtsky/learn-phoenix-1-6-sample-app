@@ -222,3 +222,38 @@ Listing_8_24: GREEN
 ```sh
 mix test test/sample_app_web/integration/user_login_test.exs
 ```
+
+
+### logout
+
+RESTful action delete means logout.
+
+```elixir
+defmodule SampleAppWeb.AuthPlug do
+  import Plug.Conn
+  # ...
+
+  # Logs out the current user.
+  def logout(conn) do                          # +
+    conn                                       # +
+    |> configure_session(drop: true)           # + cleanup cookie in frontend
+    |> assign(:current_user, nil)              # + cleanup user in backend
+  end                                          # +
+end
+```
+
+
+```elixir
+defmodule SampleAppWeb.SessionController do
+  use SampleAppWeb, :controller
+  alias SampleApp.Accounts
+  alias SampleAppWeb.AuthPlug
+
+  # for logout
+  def delete(conn, _params) do                       # +
+    conn                                             # +
+    |> AuthPlug.logout()                             # +
+    |> redirect(to: Routes.root_path(conn, :home))   # + redirect to /
+  end                                                # +
+end
+```
