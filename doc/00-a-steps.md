@@ -25,3 +25,5 @@
   - debug information
   - Users resource
   - Gravatar image and sidebar
+  - signup error messages
+  - test for invalid submition

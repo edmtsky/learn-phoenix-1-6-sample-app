@@ -479,3 +479,67 @@ add code to display error messages on the signup form:
   </div>
 </div>
 ```
+
+## use /signup URL for form submition(POST request) instead of /users(default)
+
+> lib/sample_app_web/templates/user/new.html.heex
+```heex
+<h1>Sign up</h1>
+
+<div class="row">
+  <div class="mx-auto col-md-6 col-md-offset-3">
+    <%= form_for @changeset, Routes.signup_path(@conn, :create), fn f -> %>
+                                    ^^^^
+```
+
+router.ex
+```elixir
+  scope "/", SampleAppWeb do
+    pipe_through :browser
+
+    get "/", StaticPageController, :home, as: :root
+    get "/help", StaticPageController, :help, as: :help
+    get "/about", StaticPageController, :about, as: :about
+    get "/contact", StaticPageController, :contact, as: :contact
+    get "/signup", UserController, :new, as: :signup
+    post "/signup", UserController, :create, as: :signup              # << add
+    resources "/users", UserController
+  end
+```
+
+add integration test for invalid signup submition:
+
+```elixir
+defmodule SampleAppWeb.UserSignupTest do
+  use SampleAppWeb.ConnCase, async: true
+  alias SampleAppWeb.Endpoint
+
+  test "invalid signup information", %{conn: conn} do
+    user_records_before = Repo.one(from u in User, select: count())
+
+    conn =
+      conn
+      |> get(Routes.signup_path(conn, :new))              # GET /signup
+      |> post(Routes.signup_path(conn, :create), %{       # POST /signup
+        user: %{
+          name: "",
+          email: "user@invalid",
+          password: "foo",
+          password_confirmation: "bar"
+        }
+      })
+
+    user_records_after = Repo.one(from u in User, select: count())
+    assert user_records_before == user_records_after
+
+    html_response(conn, 200)
+    # CSS class for the error count tag
+    |> assert_select("div.alert-danger")
+    # CSS class for field with error explanation
+    |> assert_select("span.invalid-feedback", count: 4)
+    # make sure that `<form  action="/signup"` not `/users`(what was by default)
+    |> assert_select("form[action='#{Routes.signup_path(Endpoint, :create)}']")
+    #                                       ^ /signup
+  end
+end
+```

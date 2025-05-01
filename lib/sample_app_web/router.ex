@@ -22,6 +22,7 @@ defmodule SampleAppWeb.Router do
     get "/about", StaticPageController, :about, as: :about
     get "/contact", StaticPageController, :contact, as: :contact
     get "/signup", UserController, :new, as: :signup
+    post "/signup", UserController, :create, as: :signup
     resources "/users", UserController
   end
 
