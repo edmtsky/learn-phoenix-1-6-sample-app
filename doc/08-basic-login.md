@@ -157,3 +157,37 @@ curl localhost:4000/login
 - `params["session"]["email"]`
 - `params["session"]["password"]`
 
+
+
+### Changing the layout links
+
+add links for:
+- logging out
+- user settings
+- listing all users
+- the current user's profile page.
+
+```html
+================================================================================
+                                                 Home  Help  Users  Account
+--------------------------------------------------------------------v-----------
+[Avatar] NickName                                         +----------------+
+                                                          |  Profile       |
+                                                          |  Settings      |
+                                                          |----------------|
+                                                          |  Log out       |
+                                                          +----------------+
+
+
+================================================================================
+```
+
+```heex
+<%= if @current_user do %>
+  # Links for logged-in users
+<% else %>
+  # Links for non-logged-in-users
+<% end %>
+```
+
+dropdown menus made by Bootstrap's CSS classes such as `dropdown` `dropdown-menu`

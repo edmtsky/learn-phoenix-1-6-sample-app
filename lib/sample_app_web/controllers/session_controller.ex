@@ -1,6 +1,7 @@
 defmodule SampleAppWeb.SessionController do
   use SampleAppWeb, :controller
   alias SampleApp.Accounts
+  alias SampleAppWeb.AuthPlug
 
   def new(conn, _params) do
     render(conn, "new.html")
