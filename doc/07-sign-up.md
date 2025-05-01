@@ -543,3 +543,45 @@ defmodule SampleAppWeb.UserSignupTest do
   end
 end
 ```
+
+
+### finished signup form
+
+The user create action with an insert and a redirect.
+> lib/sample_app_web/controllers/user_controller.ex
+```elixir
+defmodule SampleAppWeb.UserController do
+  use SampleAppWeb, :controller
+  alias SampleApp.Accounts
+  alias SampleApp.Accounts.User
+  # ...
+
+  def create(conn, %{"user" => user_params}) do
+    case Accounts.create_user(user_params) do
+      {:ok, user} ->                                              # *
+        conn
+        |> redirect(to: Routes.user_path(conn, :show, user))      # +
+
+      # Handle a successful User insertion.
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, "new.html", changeset: changeset)
+    end
+  end
+  #...
+end
+```
+
+now after successful signup automaticaly redirected to
+http://127.0.0.1:4000/users/2
+
+check is valid signup sure create a new user:
+```elixir
+iex> import Ecto.Query
+Ecto.Query
+iex> SampleApp.Repo.one(from u in SampleApp.Accounts.User, select: count())
+[debug] QUERY OK source="users" db=5.4ms decode=6.1ms queue=42.8ms idle=813.3ms
+SELECT count(*) FROM "users" AS u0 []
+2
+```
+
+
