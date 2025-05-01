@@ -86,3 +86,74 @@ POST  |/login |create|login_path(conn, :create)|create a new session (login)
 DELETE|/logout|delete|login_path(conn, :delete)|delete a session (log out)
 
 
+
+### login form
+
+mockup_of_login_failure
+```html
+================================================================================
+                                                            Home  Help  Log in
+--------------------------------------------------------------------------------
+  -------------------------------------------------------------------------
+ | Invalid email/password combination.                                     |
+  -------------------------------------------------------------------------
+
+
+                                   Log in
+
+                          Email
+                          _______________________
+
+                          Password
+                          _______________________
+
+                          [Log in]
+                          New user? Sign up now!
+
+================================================================================
+```
+
+
+because here no Session model (hence no analogue for the `@changeset` variable)
+so you have to use the `form_for` like so:
+
+```heex
+<%= form_for @conn, Routes.login_path(@conn, :create), [as: :session], fn f -> %>
+  .
+  .
+  .
+<% end %>
+```
+
+way to added a link to the signup page (/signup):
+```heex
+    <p>New user?
+      <%= link "Sign up now!", to: Routes.signup_path(@conn, :new) %>
+    </p>
+```
+
+```sh
+curl localhost:4000/login
+```
+
+```html
+<form action="/login" method="post">
+  <input name="_csrf_token" type="hidden"
+    value="NCdbNQYyWzIJB0ADYXMqCQM2YkclAxVRmloRvp8Vb_2RY0hSkTUpiT_4">
+  <label for="session_email">Email</label>
+  <input class="form-control" id="session_email"
+    name="session[email]" type="email">
+
+  <label for="session_password">Password</label>
+  <input class="form-control" id="session_password"
+    name="session[password]" type="password">
+
+  <button class="btn btn-primary" type="submit">Log in</button>
+</form>
+
+<p>New user? <a href="/signup">Sign up now!</a> </p>
+```
+
+- `params["session"]["email"]`
+- `params["session"]["password"]`
+
