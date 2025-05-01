@@ -257,3 +257,16 @@ defmodule SampleAppWeb.SessionController do
   end                                                # +
 end
 ```
+
+
+### learned things:
+
+- Phoenix can maintain state from one page to the next
+  using temporary cookies via the `session` method.
+- The login form is designed to create a new session to log a user in.
+- Using the `session` method, we can securely place a user id on the browser
+  to create a temporary session.
+- We can change features such as links on the layouts based on login status.
+- Integration tests can verify correct routes, database updates, and
+  proper changes to the layout.
+
