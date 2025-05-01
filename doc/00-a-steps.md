@@ -33,3 +33,4 @@
 
 - basic login
   - add session controller
+  - find and authenticate a user with a flash message
