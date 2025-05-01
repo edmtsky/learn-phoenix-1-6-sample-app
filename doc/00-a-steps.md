@@ -32,5 +32,9 @@
   - test for valid submission
 
 - basic login
-  - add session controller
-  - find and authenticate a user with a flash message
+  - sessions
+    - add session controller
+    - find and authenticate a user with a flash message
+  - loggin in
+    - Authentication Plug
+
