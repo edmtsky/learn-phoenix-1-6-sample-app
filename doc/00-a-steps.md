@@ -29,3 +29,4 @@
   - test for invalid submition
   - redirect to user profile after successful signup
   - flash message
+  - test for valid submission

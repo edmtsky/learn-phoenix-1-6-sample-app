@@ -609,11 +609,24 @@ defmodule SampleAppWeb.UserController do
   end
 ```
 
-
+> lib/sample_app_web/templates/layout/app.html.heex
+add flash message to html response:
 ```heex
     <%= for {message_type, message} <- get_flash(@conn) do %>
       <div class={"alert alert-#{message_type}"}>
         <%= message %>
       </div>
     <% end %>
+```
+
+this
+```heex
+
+      <div class={"alert alert-#{message_type}"}>
+        <%= message %>
+      </div>
+```
+can be replaces with:
+```heex
+      <%= content_tag(:div, message, class: "alert alert-#{message_type}") %>
 ```
