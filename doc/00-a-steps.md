@@ -30,3 +30,6 @@
   - redirect to user profile after successful signup
   - flash message
   - test for valid submission
+
+- basic login
+  - add session controller

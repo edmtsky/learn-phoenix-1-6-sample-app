@@ -1,3 +1,6 @@
+routes:
+	mix phx.routes
+
 run:
 	mix phx.server
 
