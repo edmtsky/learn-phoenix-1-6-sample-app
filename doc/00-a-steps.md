@@ -28,3 +28,4 @@
   - signup error messages
   - test for invalid submition
   - redirect to user profile after successful signup
+  - flash message

@@ -13,6 +13,11 @@
   <body>
   <%= render "_header.html", assigns %>
   <div class="container mt-4">
+    <%= for {message_type, message} <- get_flash(@conn) do %>
+      <div class={"alert alert-#{message_type}"}>
+        <%= message %>
+      </div>
+    <% end %>
     <%= @inner_content %>
     <%= render "_footer.html", assigns %>
     <%= render "_debug.html", assigns %>

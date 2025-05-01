@@ -585,3 +585,35 @@ SELECT count(*) FROM "users" AS u0 []
 ```
 
 
+### add The flash message
+
+add a message that appears on the subsequent page
+(in this case, welcoming a new user to the application) and
+then disappears upon visiting a second page or on page reload.
+
+`flash` is a special map in conn (Plug.Conn) used to display temporary messages
+
+```elixir
+defmodule SampleAppWeb.UserController do
+  # ...
+
+  def create(conn, %{"user" => user_params}) do
+    case Accounts.create_user(user_params) do
+      {:ok, user} ->
+        conn
+        |> put_flash(:success, "Welcome to the Sample App!")  # <<<<
+        |> redirect(to: Routes.user_path(conn, :show, user))
+
+       # ...
+    end
+  end
+```
+
+
+```heex
+    <%= for {message_type, message} <- get_flash(@conn) do %>
+      <div class={"alert alert-#{message_type}"}>
+        <%= message %>
+      </div>
+    <% end %>
+```

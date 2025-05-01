@@ -18,6 +18,7 @@ defmodule SampleAppWeb.UserController do
     case Accounts.create_user(user_params) do
       {:ok, user} ->
         conn
+        |> put_flash(:success, "Welcome to the Sample App!")
         |> redirect(to: Routes.user_path(conn, :show, user))
 
       # Handle a successful User insertion.
