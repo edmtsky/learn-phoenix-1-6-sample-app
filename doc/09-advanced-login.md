@@ -221,3 +221,20 @@ using raise-BAD technique:
         end
   # ...
 ```
+
+
+
+### learned:
+
+- Phoenix can maintain state from one page to the next
+  using persistent cookies via the `cookies` method.
+- We use the `Phoenix.Token` module to create a remember token
+  that can be verified.
+- Using the `cookies` method, we create a persistent session
+  by placing a permanent remember token cookie on the browser.
+- Log status is determined by the presence of a current_user
+  based on the temporary session's user_id or
+  the permanent session's unique remember token.
+- The application signs users out by dropping the session and
+  removing the permanent remember token cookie from the browser.
+
