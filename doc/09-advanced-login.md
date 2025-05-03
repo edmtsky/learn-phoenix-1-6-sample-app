@@ -201,3 +201,23 @@ defmodule SampleAppWeb.UserLoginTest do
   # ...
 end
 ```
+
+### Testing the remember branch
+Here about covering tests all possible options in the AuthPlug.call functions
+
+using raise-BAD technique:
+```elixir
+  # ...
+        case SampleApp.Token.verify_remember_token(token) do
+          {:ok, user_id} ->
+            if user = Accounts.get_user(user_id) do
+              # raise "BAD"                                                 # +
+              login(conn, user)
+            else
+              logout(conn)
+            end
+          {:error, _reason} ->
+            logout(conn)
+        end
+  # ...
+```

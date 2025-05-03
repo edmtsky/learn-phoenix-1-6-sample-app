@@ -50,3 +50,4 @@
   - remember-me checkbox
   - remember tests
     - testing remember-me checkbox
+    - testing the remember branch
