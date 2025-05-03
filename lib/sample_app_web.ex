@@ -23,6 +23,7 @@ defmodule SampleAppWeb do
 
       import Plug.Conn
       import SampleAppWeb.Gettext
+      import SampleAppWeb.AuthPlug, only: [logged_in_user: 2]
       alias SampleAppWeb.Router.Helpers, as: Routes
     end
   end

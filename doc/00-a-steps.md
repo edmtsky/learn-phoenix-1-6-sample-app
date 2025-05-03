@@ -55,3 +55,6 @@
 - updating-users
   - edit form
   - handle unsuccessful and successful edits
+
+- authorization
+  - requiring logged-in users (to edit profile)

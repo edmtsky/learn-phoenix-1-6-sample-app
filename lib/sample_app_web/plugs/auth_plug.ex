@@ -1,6 +1,8 @@
 defmodule SampleAppWeb.AuthPlug do
   import Plug.Conn
+  import Phoenix.Controller
   alias SampleApp.Accounts
+  alias SampleAppWeb.Router.Helpers, as: Routes
 
   # 20 years in second
   @cookie_max_age 630_720_000
@@ -30,6 +32,18 @@ defmodule SampleAppWeb.AuthPlug do
 
       true ->
         assign(conn, :current_user, nil)
+    end
+  end
+
+  # function plug that confirms a logged-in user
+  def logged_in_user(conn, _opts) do
+    if conn.assigns.current_user do
+      conn
+    else
+      conn
+      |> put_flash(:danger, "please log in.")
+      |> redirect(to: Routes.login_path(conn, :create))
+      |> halt()
     end
   end
 

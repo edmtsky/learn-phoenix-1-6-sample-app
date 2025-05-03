@@ -117,3 +117,57 @@ defmodule SampleApp.Accounts.User do
   end
 ```
 
+
+### Authorization
+
+
+#### Requiring logged-in users
+
+Block attempt to edit users who have not logged-in.
+
+requiring users to be logged-in when editing their profiles.
+- add `AuthPlug.logged_in_user` - a plug function
+
+```elixir
+defmodule SampleAppWeb.AuthPlug do
+  # ...
+  import Phoenix.Controller                                                 # +
+  alias SampleAppWeb.Router.Helpers, as: Routes                             # +
+
+  # ...
+
+  # function plug that confirms a logged-in user                            # +
+  def logged_in_user(conn, _opts) do                                        # +
+    if conn.assigns.current_user do                                         # +
+      conn                                                                  # +
+    else                                                                    # +
+      conn                                                                  # +
+      |> put_flash(:danger, "please log in.")                               # +
+      |> redirect(to: Routes.login_path(conn, :create))                     # +
+      |> halt()                                                             # +
+    end                                                                     # +
+  end                                                                       # +
+
+  #...
+end
+```
+
+
+- import the `AuthPlug.logged_in_user` function in `SampleAppWeb` module
+  (so you can use it in all controllers)
+
+- use AuthPlug.logged_in_user in UserController only for edit and update actions:
+
+
+```elixir
+defmodule SampleAppWeb.UserController do
+  use SampleAppWeb, :controller
+  alias SampleApp.Accounts
+  alias SampleApp.Accounts.User
+  alias SampleAppWeb.AuthPlug
+
+  plug :logged_in_user when action in [:edit, :update]                     # +
+  # ...
+
+end
+```
