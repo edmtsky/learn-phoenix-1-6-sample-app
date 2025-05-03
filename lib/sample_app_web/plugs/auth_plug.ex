@@ -47,6 +47,20 @@ defmodule SampleAppWeb.AuthPlug do
     end
   end
 
+  # Function plug that confirms the correct user.
+  # Protection from trying to edit someone else's profile
+  def correct_user(conn, _opts) do
+    user_id = String.to_integer(conn.params["id"])
+
+    unless user_id == conn.assigns.current_user.id do
+      conn
+      |> redirect(to: Routes.root_path(conn, :home))
+      |> halt()
+    else
+      conn
+    end
+  end
+
   # Logs in the given user.
   def login(conn, user) do
     conn

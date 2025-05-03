@@ -5,6 +5,7 @@ defmodule SampleAppWeb.UserController do
   alias SampleAppWeb.AuthPlug
 
   plug :logged_in_user when action in [:edit, :update]
+  plug :correct_user   when action in [:edit, :update]
 
   def new(conn, _params) do
     changeset = Accounts.change_user(%User{})

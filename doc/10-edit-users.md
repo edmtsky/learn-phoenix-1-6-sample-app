@@ -171,3 +171,55 @@ defmodule SampleAppWeb.UserController do
 
 end
 ```
+
+
+#### Requiring the right user
+
+Users should only be allowed to edit their own information.
+(protect the `edit` and `update` actions)
+
+```elixir
+defmodule SampleAppWeb do
+  # ...
+  def controller do
+    quote do
+      # ...
+      import SampleAppWeb.AuthPlug, only: [logged_in_user: 2, correct_user: 2]
+      # ...                                                   ^^^^^^^^^^^^
+    end
+  end
+  #  ...
+```
+
+```elixir
+defmodule SampleAppWeb.UserController do
+  use SampleAppWeb, :controller
+  alias SampleApp.Accounts
+  alias SampleApp.Accounts.User
+  alias SampleAppWeb.AuthPlug
+
+  plug :logged_in_user when action in [:edit, :update]
+  plug :correct_user   when action in [:edit, :update]                      # +
+  # ...
+```
+
+```elixir
+defmodule SampleAppWeb.AuthPlug do
+  # ...
+
+  # Function plug that confirms the correct user.
+  def correct_user(conn, _opts) do                                          # +
+    user_id = String.to_integer(conn.params["id"])                          # +
+
+    unless user_id == conn.assigns.current_user.id do                       # +
+      conn                                                                  # +
+      |> redirect(to: Routes.root_path(conn, :home))                        # +
+      |> halt()                                                             # +
+    else                                                                    # +
+      conn                                                                  # +
+    end                                                                     # +
+  end                                                                       # +
+  # ...
+end
+```
+
