@@ -29,6 +29,8 @@ defmodule SampleAppWeb.DynamicTextHelpers do
 
   defp get_page_title(%{view_module: SessionView, action: :new}), do: "Log in"
 
+  defp get_page_title(%{view_module: UserView, action: :edit}), do: "Edit user"
+
   defp get_page_title(%{view_module: _, action: _, title: title}), do: title
 
   defp get_page_title(_), do: nil

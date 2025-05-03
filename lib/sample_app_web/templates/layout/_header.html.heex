@@ -41,9 +41,9 @@
                         to: Routes.user_path(@conn, :show, @current_user),
                         class: "dropdown-item" %>
                     </li>
-                    <li>
-                      <%= link "Settings", to: "#", class: "dropdown-item" %>
-                    </li>
+                      <%= link "Settings",
+                        to: Routes.user_path(@conn, :edit, @current_user),
+                        class: "dropdown-item" %>
                     <li class="dropdown-divider"></li>
                     <li>
                       <%= link "Log out", to: Routes.logout_path(@conn, :delete),

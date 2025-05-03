@@ -51,3 +51,6 @@
   - remember tests
     - testing remember-me checkbox
     - testing the remember branch
+
+- updating-users
+  - edit form

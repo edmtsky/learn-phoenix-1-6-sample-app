@@ -28,4 +28,16 @@ defmodule SampleAppWeb.UserController do
         render(conn, "new.html", changeset: changeset)
     end
   end
+
+  # action to send edit-form
+  def edit(conn, %{"id" => id}) do
+    user = Accounts.get_user!(id)
+    changeset = Accounts.change_user(user)
+    render(conn, "edit.html", user: user, changeset: changeset)
+  end
+
+  # to handle PUT /users/:id/edit from edit-form
+  def update(conn, _params) do
+    html(conn, "TODO")
+  end
 end
