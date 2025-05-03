@@ -49,6 +49,7 @@ defmodule SampleAppWeb.AuthPlug do
 
   def logout(conn) do
     conn
+    |> delete_resp_cookie("remember_token")
     |> configure_session(drop: true)
     |> assign(:current_user, nil)
   end

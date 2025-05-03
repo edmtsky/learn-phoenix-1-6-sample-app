@@ -46,3 +46,4 @@
   - remember me
     - generate and verify remember token
     - login with remembering
+    - fixing the logout function

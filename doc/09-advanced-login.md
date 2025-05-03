@@ -84,5 +84,8 @@ end
 At this point of impl here's a problem - there's no way for users to log out.
 This is exactly the sort of thing our test suite should catch.(RED)
 
-
+this can be fixed via:
+```elixir
+delete_resp_cookie("remember_token")
+```
 
