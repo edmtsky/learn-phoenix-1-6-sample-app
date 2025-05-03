@@ -256,4 +256,142 @@ defmodule SampleApp.AccountsTest do
                Accounts.authenticate_by_email_and_pass("bad@email.com", @password)
     end
   end
+
+  describe "update_user/2" do
+    setup do
+      {:ok, user: Factory.insert(:user)}
+    end
+
+    test "name left blank does not update user", %{user: user} do
+      assert {:error, %Ecto.Changeset{}} =
+               Accounts.update_user(user, %{
+                 @valid_attrs
+                 | name: "      "
+               })
+    end
+
+    test "email left blank does not update user", %{user: user} do
+      assert {:error, %Ecto.Changeset{}} =
+               Accounts.update_user(user, %{
+                 @valid_attrs
+                 | email: "      "
+               })
+    end
+
+    test "name too long does not update user", %{user: user} do
+      assert {:error, %Ecto.Changeset{}} =
+               Accounts.update_user(user, %{
+                 @valid_attrs
+                 | name: String.duplicate("a", 51)
+               })
+    end
+
+    test "email too long does not update user", %{user: user} do
+      assert {:error, %Ecto.Changeset{}} =
+               Accounts.update_user(user, %{
+                 @valid_attrs
+                 | email: String.duplicate("a", 244) <> "@example.com"
+               })
+    end
+
+    test "valid email addresses update user", %{user: user} do
+      valid_addresses = ~w(user@example.com USER@foo.COM A_US-ER@foo.bar.org
+                           first.last@foo.jp alice+bob@baz.cn)
+
+      for valid_address <- valid_addresses do
+        assert {:ok, %User{}} =
+                 Accounts.update_user(user, %{
+                   @valid_attrs
+                   | email: valid_address
+                 })
+      end
+    end
+
+    test "invalid email addresses do not update user", %{user: user} do
+      invalid_addresses = ~w(user@example,com user_at_foo.org user.name@example.
+                           foo@bar_baz.com foo@bar+baz.com foo@bar..com)
+
+      for invalid_address <- invalid_addresses do
+        assert {:error, %Ecto.Changeset{}} =
+                 Accounts.update_user(user, %{
+                   @valid_attrs
+                   | email: invalid_address
+                 })
+      end
+    end
+
+    test "existing email address does not update user", %{user: user} do
+      other_user = Factory.insert(:user)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Accounts.update_user(user, %{
+                 @valid_attrs
+                 | email: String.upcase(other_user.email)
+               })
+    end
+
+    test "email address is updated as lower-case", %{user: user} do
+      mixed_case_email = "Foo@ExAMPle.CoM"
+
+      assert {:ok, %User{email: "foo@example.com"}} =
+               Accounts.update_user(user, %{
+                 @valid_attrs
+                 | email: mixed_case_email
+               })
+    end
+
+    test "password and password confirmation with blank
+          characters does not update user",
+         %{user: user} do
+      blank_password = String.duplicate(" ", 6)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Accounts.update_user(user, %{
+                 @valid_attrs
+                 | email: user.email,
+                   password: blank_password,
+                   password_confirmation: blank_password
+               })
+    end
+
+    test "password and password confirmation blank with
+          no characters does update user",
+         %{user: user} do
+      assert {:ok, %User{} = updated_user} =
+               Accounts.update_user(user, %{
+                 @valid_attrs
+                 | email: user.email,
+                   password: "",
+                   password_confirmation: ""
+               })
+
+      assert {:ok, %User{}} =
+               Accounts.authenticate_by_email_and_pass(
+                 updated_user.email,
+                 user.password
+               )
+    end
+
+    test "password and password confirmation unmatched
+          does not update user",
+         %{user: user} do
+      assert {:error, %Ecto.Changeset{}} =
+               Accounts.update_user(user, %{
+                 @valid_attrs
+                 | password: "password",
+                   password_confirmation: "diffpassword"
+               })
+    end
+
+    test "password too short does not update user", %{user: user} do
+      short_password = String.duplicate("a", 5)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Accounts.update_user(user, %{
+                 @valid_attrs
+                 | password: short_password,
+                   password_confirmation: short_password
+               })
+    end
+  end
 end

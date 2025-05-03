@@ -37,7 +37,18 @@ defmodule SampleAppWeb.UserController do
   end
 
   # to handle PUT /users/:id/edit from edit-form
-  def update(conn, _params) do
-    html(conn, "TODO")
+  def update(conn, %{"id" => id, "user" => user_params}) do
+    user = Accounts.get_user!(id)
+
+    case Accounts.update_user(user, user_params) do
+      {:ok, user} ->
+        conn
+        |> put_flash(:success, "Profile updated")
+        |> redirect(to: Routes.user_path(conn, :show, user))
+
+      # Handle a successful update.
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, "edit.html", user: user, changeset: changeset)
+    end
   end
 end

@@ -42,4 +42,37 @@ defmodule SampleApp.Accounts.User do
         changeset
     end
   end
+
+  # when editing a user, we want users to be able to update their profile
+  # without entering a password and password confirmation for convenience.
+  def update_changeset(user, attrs) do
+    user
+    |> cast(attrs, [
+      :name,
+      :email,
+      :password,
+      :password_confirmation
+    ])
+    |> validate_required([:name, :email])
+    |> validate_blank([:password, :password_confirmation])
+    |> validate_length(:name, max: 50)
+    |> validate_length(:email, max: 255)
+    |> validate_format(:email, @valid_email_regex)
+    |> validate_length(:password, min: 6)
+    |> validate_confirmation(:password, message: "does not match password")
+    |> update_change(:email, &String.downcase/1)
+    |> unique_constraint(:email)
+    |> put_password_hash()
+  end
+
+  # to validate for presence only on non-nil fields in User schema
+  defp validate_blank(changeset, fields) do
+    Enum.reduce(fields, changeset, fn field, changeset ->
+      if get_change(changeset, field) == nil do
+        changeset
+      else
+        validate_required(changeset, field)
+      end
+    end)
+  end
 end
