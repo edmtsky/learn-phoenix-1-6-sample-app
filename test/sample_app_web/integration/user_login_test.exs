@@ -6,15 +6,7 @@ defmodule SampleAppWeb.UserLoginTest do
   end
 
   test "login with valid information", %{conn: conn, user: user} do
-    conn =
-      conn
-      |> get(Routes.login_path(conn, :new))
-      |> post(Routes.login_path(conn, :create), %{
-        session: %{
-          email: user.email,
-          password: "password"
-        }
-      })
+    conn = login_as(conn, user)
 
     assert is_logged_in?(conn)
 
@@ -36,13 +28,7 @@ defmodule SampleAppWeb.UserLoginTest do
     html_response(conn, 200)
     |> assert_select("form[action='#{Routes.login_path(conn, :create)}']")
 
-    conn =
-      post(conn, Routes.login_path(conn, :create), %{
-        session: %{
-          email: "",
-          password: ""
-        }
-      })
+    conn = login_as(conn, %User{email: "", password: ""})
 
     html_response(conn, 200)
     |> assert_select("form[action='#{Routes.login_path(conn, :create)}']")
@@ -59,15 +45,7 @@ defmodule SampleAppWeb.UserLoginTest do
   test "login with valid information followed by logout",
        %{conn: conn, user: user} do
     # signup + login
-    conn =
-      conn
-      |> get(Routes.login_path(conn, :new))
-      |> post(Routes.login_path(conn, :create), %{
-        session: %{
-          email: user.email,
-          password: "password"
-        }
-      })
+    conn = login_as(conn, user)
 
     assert is_logged_in?(conn)
 
@@ -99,5 +77,19 @@ defmodule SampleAppWeb.UserLoginTest do
     |> assert_select("a[href='#{Routes.login_path(conn, :new)}']")
     |> refute_select("a[href='#{Routes.logout_path(conn, :delete)}']")
     |> refute_select("a[href='#{Routes.user_path(conn, :show, user)}']")
+  end
+
+  test "login with remembering", %{conn: conn, user: user} do
+    conn = login_as(conn, user, remember_me: "1")
+    assert conn.cookies["remember_token"] != nil
+  end
+
+  test "login without remembering", %{conn: conn, user: user} do
+    # Log in to set the cookie.
+    conn = login_as(conn, user, remember_me: "true")
+    assert conn.cookies["remember_token"] != nil
+    # Log in again and verify that the cookie is deleted.
+    conn = login_as(conn, user, remember_me: "false")
+    assert conn.cookies["remember_token"] == nil
   end
 end

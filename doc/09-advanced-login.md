@@ -125,7 +125,7 @@ else
 end
 ```
 
-workaround to temporary fix a broken tests
+workaround to temporary fix a broken tests (until refactor below)
 ```elixir
 defmodule SampleAppWeb.SessionController do
   # ...
@@ -145,6 +145,59 @@ defmodule SampleAppWeb.SessionController do
     create(conn, params)
   end
 
+  # ...
+end
+```
+
+## Testing
+
+### Remember-me
+
+add a new helper function `login_as`
+> test/support/conn_test_helpers.ex
+```elixir
+defmodule SampleAppWeb.ConnTestHelpers do
+  alias SampleAppWeb.Router.Helpers, as: Routes                            # +
+  import Phoenix.ConnTest                                                  # +
+
+  @endpoint SampleAppWeb.Endpoint                                          # +
+  # ...
+
+  # add new helper function:                                               # +
+  def login_as(conn, user, opts \\ []) do
+    %{password: password, remember_me: remember_me} =
+      Enum.into(opts, %{password: "password", remember_me: "true"})
+
+    post(
+      conn,
+      Routes.login_path(conn, :create, %{
+        session: %{
+          email: user.email,
+          password: password,
+          remember_me: remember_me
+        }
+      })
+    )
+  end
+end
+```
+
+refactor
+
+```elixir
+defmodule SampleAppWeb.UserLoginTest do
+  # ...
+
+  test "login with invalid information", %{conn: conn} do
+    conn = login_as(conn, %User{email: "", password: ""})                 # +
+    # conn =                                                              # -
+    #   post(conn, Routes.login_path(conn, :create), %{
+    #     session: %{
+    #       email: "",
+    #       password: ""
+    #     }
+    #   })
+  end
   # ...
 end
 ```

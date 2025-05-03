@@ -253,7 +253,7 @@ defmodule SampleApp.AccountsTest do
 
     test "returns not found error with no matching user for email" do
       assert {:error, :not_found} =
-               Accounts.authenticate_by_email_and_pass("bad@email.com", @pass)
+               Accounts.authenticate_by_email_and_pass("bad@email.com", @password)
     end
   end
 end

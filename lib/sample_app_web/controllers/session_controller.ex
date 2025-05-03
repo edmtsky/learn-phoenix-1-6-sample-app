@@ -38,12 +38,6 @@ defmodule SampleAppWeb.SessionController do
     end
   end
 
-  def create(conn, %{"session" => session} = params) do
-    session = Map.put(session, "remember_me", "false")
-    params = Map.put(params, "session", session)
-    create(conn, params)
-  end
-
   def delete(conn, _params) do
     conn
     |> AuthPlug.logout()

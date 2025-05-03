@@ -48,4 +48,5 @@
     - login with remembering
     - fixing the logout function
   - remember-me checkbox
-
+  - remember tests
+    - testing remember-me checkbox
