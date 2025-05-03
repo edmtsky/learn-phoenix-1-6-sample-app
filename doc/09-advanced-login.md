@@ -35,3 +35,54 @@ iex> Phoenix.Token.verify(SampleAppWeb.Endpoint, "user salt", token, \
 ...> max_age: :infinity)
 {:ok, 1}
 ```
+
+
+## Login with remembering
+
+before
+
+```elixir
+defmodule SampleAppWeb.AuthPlug do
+  # ...
+
+  def call(conn, _opts) do
+    user_id = get_session(conn, :user_id)
+    user = user_id && Accounts.get_user(user_id)
+    assign(conn, :current_user, user)
+  end
+  # ...
+```
+
+a way to add support to remember_token into AuthPlug.call/2 function:
+
+```elixir
+cond do
+  conn.assigns[:current_user] ->
+    conn
+
+  user_id = get_session(conn, :user_id) ->
+    assign(conn, :current_user, Accounts.get_user(user_id))
+
+  token = conn.cookies["remember_token"] ->
+    case SampleApp.Token.verify_remember_token(token) do
+      {:ok, user_id} ->
+        if user = Accounts.get_user(user_id) do
+          login(conn, user)
+        else
+          logout(conn)
+        end
+
+      {:error, _reason} ->
+        logout(conn)
+    end
+
+  true ->
+    assign(conn, :current_user, nil)
+end
+```
+
+At this point of impl here's a problem - there's no way for users to log out.
+This is exactly the sort of thing our test suite should catch.(RED)
+
+
+

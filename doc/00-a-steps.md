@@ -45,3 +45,4 @@
 - advanced login
   - remember me
     - generate and verify remember token
+    - login with remembering

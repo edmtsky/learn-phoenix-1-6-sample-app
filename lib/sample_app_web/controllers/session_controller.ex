@@ -12,6 +12,7 @@ defmodule SampleAppWeb.SessionController do
       {:ok, user} ->
         conn
         |> AuthPlug.login(user)
+        |> AuthPlug.remember(user)
         |> put_flash(:success, "Welcome to the Sample App!")
         |> redirect(to: Routes.user_path(conn, :show, user))
 
