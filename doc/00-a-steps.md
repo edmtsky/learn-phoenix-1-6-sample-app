@@ -41,3 +41,7 @@
     - changing the layout links with tests
     - login upon signup
     - logging out
+
+- advanced login
+  - remember me
+    - generate and verify remember token
