@@ -38,3 +38,23 @@ defmodule SampleAppWeb.UserController do
   end
 end
 ```
+
+
+### target="_blank" + rel="noopener" for Gravatar
+
+to fix a minor security issue associated with
+using `target="_blank"` to open URLs, which is that
+the target site gains control of what's known as the "window object"
+associated with the HTML document.
+The target site could potentially introduce malicious content,
+such as a phishing page.
+
+to eliminate this risk entirely - add `rel="noopener"` to the origin link.
+
+```html
+<a href="http://example.com" target="_blank" rel="noopener">
+    some link
+</a>
+```
+
+https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel/noopener
