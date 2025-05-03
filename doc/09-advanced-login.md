@@ -89,3 +89,62 @@ this can be fixed via:
 delete_resp_cookie("remember_token")
 ```
 
+
+### "Remember me" checkbox
+
+make staying logged-in optional using a "remember me" checkbox.
+
+
+snippet for lib/sample_app_web/plugs/auth_plug.ex:
+```heex
+      <%= label f, :remember_me, class: "checkbox inline" do %>
+        <%= checkbox f, :remember_me %>
+        <span>Remember me on this computer</span>
+      <% end %>
+```
++ css styles
+
+
+to checkout remember_me checkbox submit invalid creds in the login page:
+
+```html
+view module: SampleAppWeb.SessionView
+controller: SampleAppWeb.SessionController
+action: :create
+params:
+  _csrf_token: "AwFVLgEZMyMMDRUYJmBJXw5JITQOHAYOLb2t2iVtIywQE80-HyOcXQ6K"
+  session: %{"email" => "a@mail.com", "password" => "123", "remember_me" => "true"}
+```
+
+
+```elixir
+if String.to_atom(params["session"]["remember_me"]) do
+  AuthPlug.remember(conn, user)
+else
+  conn
+end
+```
+
+workaround to temporary fix a broken tests
+```elixir
+defmodule SampleAppWeb.SessionController do
+  # ...
+  def create(conn, %{
+        "session" => %{
+          "email" => email,
+          "password" => pass,
+          "remember_me" => remember_me     # < in the old test has no this key
+        }
+      }) do
+    # ... logic
+  end
+
+  def create(conn, %{"session" => session} = params) do
+    session = Map.put(session, "remember_me", "false")
+    params = Map.put(params, "session", session)
+    create(conn, params)
+  end
+
+  # ...
+end
+```

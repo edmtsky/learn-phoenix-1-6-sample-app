@@ -7,12 +7,25 @@ defmodule SampleAppWeb.SessionController do
     render(conn, "new.html")
   end
 
-  def create(conn, %{"session" => %{"email" => email, "password" => pass }}) do
+  def create(conn, %{
+        "session" => %{
+          "email" => email,
+          "password" => pass,
+          "remember_me" => remember_me
+        }
+      }) do
     case Accounts.authenticate_by_email_and_pass(String.downcase(email), pass) do
       {:ok, user} ->
+        conn = AuthPlug.login(conn, user)
+
+        conn =
+          if String.to_atom(remember_me) do
+            AuthPlug.remember(conn, user)
+          else
+            delete_resp_cookie(conn, "remember_token")
+          end
+
         conn
-        |> AuthPlug.login(user)
-        |> AuthPlug.remember(user)
         |> put_flash(:success, "Welcome to the Sample App!")
         |> redirect(to: Routes.user_path(conn, :show, user))
 
@@ -23,6 +36,12 @@ defmodule SampleAppWeb.SessionController do
         |> put_flash(:danger, "Invalid email/password combination")
         |> render("new.html")
     end
+  end
+
+  def create(conn, %{"session" => session} = params) do
+    session = Map.put(session, "remember_me", "false")
+    params = Map.put(params, "session", session)
+    create(conn, params)
   end
 
   def delete(conn, _params) do
