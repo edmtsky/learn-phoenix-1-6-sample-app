@@ -59,3 +59,4 @@
 - authorization
   - requiring logged-in users (to edit profile)
   - requiring the right user
+  - friendly forwarding

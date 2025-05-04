@@ -27,7 +27,7 @@ defmodule SampleAppWeb.SessionController do
 
         conn
         |> put_flash(:success, "Welcome to the Sample App!")
-        |> redirect(to: Routes.user_path(conn, :show, user))
+        |> AuthPlug.redirect_back_or(Routes.user_path(conn, :show, user))
 
       # Log the user in and redirect to the user's show page.
       {:error, _reason} ->

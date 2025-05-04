@@ -41,6 +41,7 @@ defmodule SampleAppWeb.AuthPlug do
       conn
     else
       conn
+      |> store_location()
       |> put_flash(:danger, "please log in.")
       |> redirect(to: Routes.login_path(conn, :create))
       |> halt()
@@ -80,5 +81,25 @@ defmodule SampleAppWeb.AuthPlug do
     |> delete_resp_cookie("remember_token")
     |> configure_session(drop: true)
     |> assign(:current_user, nil)
+  end
+
+  # Redirects to stored location (or to the default).
+  def redirect_back_or(conn, default) do
+    path = get_session(conn, :forwarding_url) || default
+
+    conn
+    |> delete_session(:forwarding_url)
+    |> redirect(to: path)
+  end
+
+  # Stores the URL trying to be accessed.
+  def store_location(conn) do
+    case conn do
+      %Plug.Conn{method: "GET"} ->
+        put_session(conn, :forwarding_url, conn.request_path)
+
+      _ ->
+        conn
+    end
   end
 end

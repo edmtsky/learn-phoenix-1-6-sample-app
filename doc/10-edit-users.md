@@ -223,3 +223,84 @@ defmodule SampleAppWeb.AuthPlug do
 end
 ```
 
+
+### Friendly forwarding
+
+This is about remembering where the user who did not logged-in wanted to enter
+and, after his login, to redirect him to that place.
+
+```elixir
+ def create(conn, %{
+        "session" => %{
+          "email" => email,
+          "password" => pass,
+          "remember_me" => remember_me
+        }
+      }) do
+    case Accounts.authenticate_by_email_and_pass(String.downcase(email), pass) do
+      {:ok, user} ->
+        conn = AuthPlug.login(conn, user)
+
+        conn =
+          if String.to_atom(remember_me) do
+            AuthPlug.remember(conn, user)
+          else
+            delete_resp_cookie(conn, "remember_token")
+          end
+
+        conn
+        |> put_flash(:success, "Welcome to the Sample App!")
+        |> AuthPlug.redirect_back_or(Routes.user_path(conn, :show, user)) # +
+        # |> redirect(to: Routes.user_path(conn, :show, user))            # -
+
+      {:error, _reason} ->
+       # ...
+    end
+  end
+```
+
+add integration test
+```elixir
+defmodule SampleAppWeb.UserEditTest do
+  #...
+
+  test "successful edit with friendly forwarding", %{conn: conn, user: user} do
+    # ...
+    # - 1. tries to visit the `edit` page,
+    # - 2. then logs-in,
+    # - 3. and then checks that the user is redirected to the `edit` page
+    #      instead of the default profile page(/users/123).
+  end
+end
+```
+
+In order to forward users to their intended destination,
+you need to store the location of the requested page somewhere,
+and then redirect to that location instead of to the default.
+
+- `AuthPlug.store_location`
+- `AuthPlug.redirect_back_or`
+
+based on:
+```elixir
+path = get_session(conn, :forwarding_url) || default
+delete_session(:forwarding_url)
+redirect(to: path)
+
+put_session(conn, :forwarding_url, conn.request_path)
+```
+
+to filter only GET-requests:
+
+```elixir
+case conn do
+  %Plug.Conn{method: "GET"} ->
+    put_session(conn, :forwarding_url, conn.request_path)
+  _ -> conn
+end
+```
+add `AuthPlug.store_location` into  `AuthPlug.logged_in_user`
+
+and `AuthPlug.redirect_back_or(conn, Routes.user_path(conn, :show, user))`
+to `SessionController.create/2`
+

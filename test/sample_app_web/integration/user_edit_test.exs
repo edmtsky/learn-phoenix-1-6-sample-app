@@ -57,4 +57,35 @@ defmodule SampleAppWeb.UserEditTest do
     assert updated_user.name == name
     assert updated_user.email == email
   end
+
+  test "successful edit with friendly forwarding", %{conn: conn, user: user} do
+    name = "Foo Bar"
+    email = "foo@bar.com"
+
+    conn =
+      conn
+      |> get(Routes.user_path(conn, :edit, user))
+      |> login_as(user)
+
+    assert redirected_to(conn) == Routes.user_path(conn, :edit, user)
+
+    conn =
+      put(conn, Routes.user_path(conn, :update, user), %{
+        user: %{
+          name: name,
+          email: email,
+          password: "",
+          password_confirmation: ""
+        }
+      })
+
+    refute Enum.empty?(get_flash(conn))
+    assert redirected_to(conn) == Routes.user_path(conn, :show, user)
+    updated_user = Accounts.get_user(user.id)
+    assert updated_user.name == name
+    assert updated_user.email == email
+
+    # friendly forwarding only forwards to the given URL the first time
+    assert get_session(conn, :forwarding_url) == nil
+  end
 end
