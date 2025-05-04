@@ -379,3 +379,33 @@ css style, update link in _header
 add an integration test for all the layout links,
 (including the proper behavior for logged-in and non-logged-in users)
 
+
+
+### Sample users
+
+using faker package (add to mix.exs and mix deps.get)
+
+priv/repo/seeds.exs
+```elixir
+SampleApp.Repo.insert!(%SampleApp.Accounts.User{
+  name: "Example User",
+  email: "example@gmail.com",
+  password_hash: Argon2.hash_pwd_salt("foobar")
+})
+
+for n <- 1..99 do
+  SampleApp.Repo.insert!(%SampleApp.Accounts.User{
+    name: Faker.Person.name(),
+    email: "example-#{n}@example.com",
+    password_hash: Argon2.hash_pwd_salt("foobar")
+  })
+end
+```
+
+```sh
+mix ecto.reset
+```
+or
+```sh
+mix run priv/repo/seeds.exs
+```

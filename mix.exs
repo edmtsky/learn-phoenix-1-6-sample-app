@@ -53,6 +53,7 @@ defmodule SampleApp.MixProject do
       {:mix_test_watch, "1.1.0"},
       {:argon2_elixir, "2.4.0"},
       {:ex_machina, "2.7.0", only: :test},
+      {:faker, "0.17.0"},
       {:pgpass, git: "https://github.com/edmtsky/pgpass.git", tag: "0.1.1"},
 
       # transitive

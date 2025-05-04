@@ -9,3 +9,17 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+
+SampleApp.Repo.insert!(%SampleApp.Accounts.User{
+  name: "Example User",
+  email: "example@gmail.com",
+  password_hash: Argon2.hash_pwd_salt("foobar")
+})
+
+for n <- 1..99 do
+  SampleApp.Repo.insert!(%SampleApp.Accounts.User{
+    name: Faker.Person.name(),
+    email: "example-#{n}@example.com",
+    password_hash: Argon2.hash_pwd_salt("foobar")
+  })
+end
