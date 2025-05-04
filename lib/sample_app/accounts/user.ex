@@ -9,6 +9,7 @@ defmodule SampleApp.Accounts.User do
     field :email, :string
     field :name, :string
     field :password_hash, :string
+    field :admin, :boolean, default: false
     timestamps()
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true

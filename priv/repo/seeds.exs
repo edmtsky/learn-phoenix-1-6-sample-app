@@ -13,7 +13,8 @@
 SampleApp.Repo.insert!(%SampleApp.Accounts.User{
   name: "Example User",
   email: "example@gmail.com",
-  password_hash: Argon2.hash_pwd_salt("foobar")
+  password_hash: Argon2.hash_pwd_salt("foobar"),
+  admin: true
 })
 
 for n <- 1..99 do

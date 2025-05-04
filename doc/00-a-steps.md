@@ -65,3 +65,7 @@
   - user index
   - pagination
   - partial refactoring for users index
+
+- deleting users
+  - administrative users
+

@@ -559,3 +559,67 @@ removed code:
   <%= link @user.name, to: Routes.user_path(@conn, :show, @user) %>
 </li>
 ```
+
+
+
+### Deleting users
+
+#### Administrative users
+
+
+```sh
+mix ecto.gen.migration add_admin_to_users
+```
+
+```elixir
+defmodule SampleApp.Repo.Migrations.AddAdminToUsers do
+  use Ecto.Migration
+
+  def change do
+    alter table(:users) do                                                  # +
+      add :admin, :boolean, null: false, default: false                     # +
+    end                                                                     # +
+  end
+end
+```
+
+
+```sh
+mix ecto.migrate
+
+18:19:13.784 [info]  == Running 20250504151816 SampleApp.Repo.Migrations.AddAdminToUsers.change/0 forward
+
+18:19:13.804 [info]  alter table users
+
+18:19:13.833 [info]  == Migrated 20250504151816 in 0.0s
+```
+
+make a first user admin
+
+```sh
+iex -S mix
+```
+
+```elixir
+iex> user = SampleApp.Accounts.get_user(1)
+# ...
+iex> {:ok, user} = Ecto.Changeset.change(user, %{admin: true})
+     |> SampleApp.Repo.update()
+# ...
+iex> user.admin
+true
+```
+
+
+> priv/repo/seeds.exs
+```elixir
+SampleApp.Repo.insert!(%SampleApp.Accounts.User{
+  name: "Example User",
+  email: "examplephoenixtutorial@gmail.com",
+  password_hash: Argon2.hash_pwd_salt("foobar"),
+  admin: true                                                               # +
+})
+# ...
+```
+
+
