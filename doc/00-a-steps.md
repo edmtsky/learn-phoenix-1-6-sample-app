@@ -68,4 +68,4 @@
 
 - deleting users
   - administrative users
-
+  - the delete action

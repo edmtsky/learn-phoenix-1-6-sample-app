@@ -673,3 +673,123 @@ defmodule SampleAppWeb.UserControllerTest do
     assert updated_other_user.admin == false
   end
 ```
+
+- Ecto.Changeset.cast from docs:
+All parameters that are not explicitly permitted are ignored.
+
+
+### The delete action
+
+add delete links visible only for admins:
+
+> lib/sample_app_web/templates/user/_user.html.heex
+```heex
+<li>
+  <%= gravatar_for @user, size: 50 %>
+  <%= link @user.name, to: Routes.user_path(@conn, :show, @user) %>
+  <%= if @conn.assigns.current_user.admin && @conn.assigns.current_user
+  != @user do %>
+    | <%= link "delete",
+            to: Routes.user_path(@conn, :delete, @user),
+            method: :delete, data: [confirm: "You sure?"] %>
+  <% end %>
+</li>
+```
+
+Note:
+Web browsers can't send `DELETE` requests natively, so
+Phoenix fakes them with JavaScript.
+
+
+Adding a working delete action:
+```elixir
+defmodule SampleAppWeb.UserController do
+  # ...
+  plug :logged_in_user when action in [:index, :edit, :update, :delete]
+  #                                                             ^+++++
+
+  # ...
+
+  def delete(conn, %{"id" => id}) do
+    user = Accounts.get_user!(id)
+    Accounts.delete_user(user)
+
+    conn
+    |> put_flash(:success, "User deleted")
+    |> redirect(to: Routes.user_path(conn, :index))
+  end
+```
+
+
+
+Adding the AuthPlug.admin_user function:
+
+```elixir
+defmodule SampleAppWeb.AuthPlug do
+  # ...
+
+  # Function plug that confirms an admin user.
+  def admin_user(conn, _opts) do
+    unless conn.assigns.current_user.admin do
+      conn
+      |> redirect(to: Routes.root_path(conn, :home))
+      |> halt()
+    else
+      conn
+    end
+  end
+  # ...
+end
+```
+
+
+Importing the `admin_user` function in the SampleAppWeb module:
+```elixir
+defmodule SampleAppWeb do
+  # ...
+
+  def controller do
+    quote do
+      use Phoenix.Controller, namespace: SampleAppWeb
+      # ...
+
+      import SampleAppWeb.AuthPlug,                                         # +
+        only: [logged_in_user: 2, correct_user: 2, admin_user: 2]           # +
+
+      # ...
+    end
+  end
+  # ...
+end
+```
+
+
+Adding the `AuthPlug.admin_user` restricting the `delete` action to admins:
+```elixir
+defmodule SampleAppWeb.UserController do
+  use SampleAppWeb, :controller
+  alias SampleApp.Accounts
+  alias SampleApp.Accounts.User
+  alias SampleAppWeb.AuthPlug
+
+  plug :logged_in_user when action in [:index, :edit, :update, :delete]
+  plug :correct_user   when action in [:edit, :update]
+  plug :admin_user     when action in [:delete]                             # +
+  #...
+end
+```
+
+
+in logs:
+```elixir
+[info] POST /users/4
+[debug] Processing with SampleAppWeb.UserController.delete/2
+  Parameters: %{"_csrf_token" => "YSA...", "_method" => "delete", "id" => "4"}
+  Pipelines: [:browser]
+[debug] QUERY OK source="users" db=0.3ms idle=1356.1ms
+SELECT u0."id", u0."email", u0."name", u0."password_hash", u0."admin", u0."inserted_at", u0."updated_at" FROM "users" AS u0 WHERE (u0."id" = $1) [1]
+[debug] QUERY OK source="users" db=1.5ms idle=1356.7ms
+SELECT u0."id", u0."email", u0."name", u0."password_hash", u0."admin", u0."inserted_at", u0."updated_at" FROM "users" AS u0 WHERE (u0."id" = $1) [4]
+[debug] QUERY OK db=27.8ms queue=1.1ms idle=1374.5ms
+DELETE FROM "users" WHERE "id" = $1 [4]
+```

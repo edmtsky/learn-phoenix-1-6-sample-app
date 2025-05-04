@@ -4,7 +4,7 @@ defmodule SampleAppWeb.UserController do
   alias SampleApp.Accounts.User
   alias SampleAppWeb.AuthPlug
 
-  plug :logged_in_user when action in [:index, :edit, :update]
+  plug :logged_in_user when action in [:index, :edit, :update, :delete]
   plug :correct_user   when action in [:edit, :update]
 
   def index(conn, params) do
@@ -59,5 +59,14 @@ defmodule SampleAppWeb.UserController do
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", user: user, changeset: changeset)
     end
+  end
+
+  def delete(conn, %{"id" => id}) do
+    user = Accounts.get_user!(id)
+    Accounts.delete_user(user)
+
+    conn
+    |> put_flash(:success, "User deleted")
+    |> redirect(to: Routes.user_path(conn, :index))
   end
 end

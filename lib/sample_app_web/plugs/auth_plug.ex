@@ -102,4 +102,16 @@ defmodule SampleAppWeb.AuthPlug do
         conn
     end
   end
+
+  # Function plug that confirms an admin user.
+  # Used to provide access for admins only
+  def admin_user(conn, _opts) do
+    unless conn.assigns.current_user.admin do
+      conn
+      |> redirect(to: Routes.root_path(conn, :home))
+      |> halt()
+    else
+      conn
+    end
+  end
 end
