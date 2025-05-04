@@ -10,7 +10,6 @@ defmodule SampleAppWeb.UserController do
 
   def index(conn, params) do
     users_page = Accounts.paginate_users(params)
-    require IEx ; IEx.pry()
     render(conn, "index.html", users_page: users_page)
   end
 
