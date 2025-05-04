@@ -6,6 +6,7 @@ defmodule SampleAppWeb.UserController do
 
   plug :logged_in_user when action in [:index, :edit, :update, :delete]
   plug :correct_user   when action in [:edit, :update]
+  plug :admin_user     when action in [:delete]
 
   def index(conn, params) do
     users_page = Accounts.paginate_users(params)

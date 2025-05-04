@@ -7,7 +7,8 @@ defmodule SampleApp.UserFactory do
           email: sequence(:email, &"user-#{&1}@example.com"),
           password: "password",
           password_confirmation: "password",
-          password_hash: Argon2.hash_pwd_salt("password")
+          password_hash: Argon2.hash_pwd_salt("password"),
+          admin: false
         }
       end
     end
