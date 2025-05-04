@@ -7,9 +7,10 @@ defmodule SampleAppWeb.UserController do
   plug :logged_in_user when action in [:index, :edit, :update]
   plug :correct_user   when action in [:edit, :update]
 
-  def index(conn, _params) do
-    users = Accounts.list_users()
-    render(conn, "index.html", users: users)
+  def index(conn, params) do
+    users_page = Accounts.paginate_users(params)
+    require IEx ; IEx.pry()
+    render(conn, "index.html", users_page: users_page)
   end
 
   def new(conn, _params) do

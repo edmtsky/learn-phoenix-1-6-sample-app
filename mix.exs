@@ -55,6 +55,10 @@ defmodule SampleApp.MixProject do
       {:ex_machina, "2.7.0", only: :test},
       {:faker, "0.17.0"},
       {:pgpass, git: "https://github.com/edmtsky/pgpass.git", tag: "0.1.1"},
+      {:scrivener_ecto, "2.7.0"},
+      {:scrivener_html,
+        git: "https://github.com/goravbhootra/scrivener_html",
+        ref: "4984551e8bdb609f49df59c5a93cdea59a1dfa84"},
 
       # transitive
       {:castore, "0.1.13"},

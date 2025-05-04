@@ -21,6 +21,10 @@ defmodule SampleApp.Accounts do
     Repo.all(User)
   end
 
+  def paginate_users(params) do
+    Repo.paginate(User, params)
+  end
+
   @doc """
   Gets a single user.
 

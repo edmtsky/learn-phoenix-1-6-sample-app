@@ -7,6 +7,10 @@
 # General application configuration
 import Config
 
+config :scrivener_html,
+  routes_helper: SampleAppWeb.Router.Helpers,
+  view_style: :bootstrap_v4
+
 config :sample_app,
   ecto_repos: [SampleApp.Repo]
 

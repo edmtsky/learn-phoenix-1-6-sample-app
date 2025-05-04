@@ -409,3 +409,119 @@ or
 ```sh
 mix run priv/repo/seeds.exs
 ```
+
+
+### Pagination
+
+adopt one of the simplest and most robust, called `scrivener_ecto`.
+To use it, you need to include both
+the `scrivener_ecto` package and `scrivener_html`,
+scrivener_html configures `scrivener_ecto` to use Bootstrap's pagination styles.
+
+- https://github.com/mojotech/scrivener
+- https://github.com/mojotech/scrivener_ecto
+- https://github.com/mgwidmann/scrivener_html
+
+
+Related Libraries (from https://github.com/mojotech/scrivener)
+
+- Scrivener.Ecto paginate your Ecto queries with Scrivener
+- Scrivener.HTML generates HTML output using Bootstrap or other frameworks
+- Scrivener.Headers adds response headers for API pagination
+- Scrivener.List allows pagination of a list
+
+mix.exs
+```elixir
+  defp deps do
+    [
+      # ...
+      {:scrivener_ecto, "2.7.0"},                                           # +
+      {:scrivener_html,                                                     # +
+      git: "https://github.com/goravbhootra/scrivener_html",                # +
+      ref: "4984551e8bdb609f49df59c5a93cdea59a1dfa84"}                      # +
+    ]
+  end
+```
+
+```sh
+mix deps.get
+```
+
+```heex
+<h1>All users</h1>
+
+<%= pagination_links @conn, @users_page %>
+
+<ul class="users">
+  <%= for user <- @users_page do %>
+    <li>
+      <%= gravatar_for user, size: 50 %>
+      <%= link user.name, to: Routes.user_path(@conn, :show, user) %>
+    </li>
+  <% end %>
+</ul>
+
+<%= pagination_links @conn, @users_page %>
+
+```
+- `@users_page` - is a `Scrivener.Page` struct
+(then displays pagination links to access other pages)
+
+
+```elixir
+defmodule SampleAppWeb.UserView do
+  use SampleAppWeb, :view
+  use Scrivener.HTML                                                     # <<< +
+
+  # ...
+end
+```
+
+```elixir
+defmodule SampleApp.Repo do
+  use Ecto.Repo,
+    otp_app: :sample_app,
+    adapter: Ecto.Adapters.Postgres
+
+  use Scrivener, page_size: 30                                          # <<< +
+end
+```
+
+
+```elixir
+iex> alias SampleApp.Repo
+SampleApp.Repo
+
+iex> alias SampleApp.Accounts.User
+SampleApp.Accounts.User
+
+iex> Repo.paginate(User, %{page: 1})
+[debug] QUERY OK source="users" db=1.4ms decode=1.6ms queue=1.5ms idle=1397.8ms
+SELECT count('*') FROM "users" AS u0 []
+[debug] QUERY OK source="users" db=11.3ms queue=0.8ms idle=1429.9ms
+SELECT u0."id", u0."email", u0."name", u0."password_hash", u0."inserted_at",
+u0."updated_at" FROM "users" AS u0 LIMIT $1 OFFSET $2 [30, 0]
+%Scrivener.Page{
+  entries: [
+    %SampleApp.Accounts.User{
+      __meta__: #Ecto.Schema.Metadata<:loaded, "users">,
+      email: "examplephoenixtutorial@gmail.com",
+      id: 1,
+      inserted_at: ~N[2021-12-26 04:01:05],
+      name: "Example User",
+      password: nil,
+      password_confirmation: nil,
+      password_hash: "$argon2id$v=19$m=256,t=1,
+      p=4$vBnGsJGO39uddO8mrXF/Xw$Rhme+XdMAp/FpG41jlUmZkMBV1Wc0pLsf+OuGgr+v7g",
+      updated_at: ~N[2021-12-26 04:01:05]
+    },
+    .
+    .
+    .
+  ],
+  page_number: 1,
+  page_size: 30,
+  total_entries: 100,
+  total_pages: 4
+}
+```

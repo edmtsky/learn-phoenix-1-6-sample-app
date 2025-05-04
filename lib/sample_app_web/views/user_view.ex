@@ -1,5 +1,6 @@
 defmodule SampleAppWeb.UserView do
   use SampleAppWeb, :view
+  use Scrivener.HTML
 
   defp md5_hexdigest(str) do
     :crypto.hash(:md5, str)
