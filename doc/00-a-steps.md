@@ -64,3 +64,4 @@
 - showing all users
   - user index
   - pagination
+  - partial refactoring for users index

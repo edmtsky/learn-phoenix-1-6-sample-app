@@ -525,3 +525,37 @@ u0."updated_at" FROM "users" AS u0 LIMIT $1 OFFSET $2 [30, 0]
   total_pages: 4
 }
 ```
+
+
+### Partial refactoring
+
+```heex
+<h1>All users</h1>
+
+<%= pagination_links @conn, @users_page %>
+
+<ul class="users">
+  <%= for user <- @users_page do %>
+    <%= render "_user.html", conn: @conn, user: user %>             <!-- << -->
+  <% end %>
+</ul>
+
+<%= pagination_links @conn, @users_page %>
+```
+
+removed code:
+```heex
+    <li>
+      <%= gravatar_for user, size: 50 %>
+      <%= link user.name, to: Routes.user_path(@conn, :show, user) %>
+    </li>
+```
+
+
+> lib/sample_app_web/templates/user/_user.html.heex
+```heex
+<li>
+  <%= gravatar_for @user, size: 50 %>
+  <%= link @user.name, to: Routes.user_path(@conn, :show, @user) %>
+</li>
+```
