@@ -68,4 +68,24 @@ defmodule SampleAppWeb.UserControllerTest do
     refute Enum.empty?(get_flash(conn))
     assert redirected_to(conn, 302) == Routes.login_path(conn, :create)
   end
+
+  test "should not allow the admin attribute to be edited via the web",
+       %{conn: conn, other_user: other_user} do
+    conn = login_as(conn, other_user)
+    assert other_user.admin == false
+
+    put(
+      conn,
+      Routes.user_path(conn, :update, other_user, %{
+        user: %{
+          password: "",
+          password_confirmation: "",
+          admin: true,
+        }
+      })
+    )
+
+    updated_other_user = Accounts.get_user(other_user.id)
+    assert updated_other_user.admin == false
+  end
 end

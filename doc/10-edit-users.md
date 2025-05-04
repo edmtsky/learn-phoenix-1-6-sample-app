@@ -623,3 +623,53 @@ SampleApp.Repo.insert!(%SampleApp.Accounts.User{
 ```
 
 
+#### Revisiting cast parameters
+not allow the admin attribute to be edited via the web.
+
+```sh
+put /users/17?admin=1
+```
+
+allow only update fields that are safe to edit through the web.
+This can be accomplished by using the `cast` function in our `update_changeset`
+and `changeset` function:
+
+```elixir
+user
+|> cast(attrs, [
+  :name,
+  :email,
+  :password,
+  :password_confirmation
+])
+```
+
+Note that `admin` is not in the list of permitted parameters.
+This is what
+prevents arbitrary users from granting themselves administrative access to app.
+
+
+```elixir
+defmodule SampleAppWeb.UserControllerTest do
+  # ...
+
+  test "should not allow the admin attribute to be edited via the web",
+       %{conn: conn, other_user: other_user} do
+    conn = login_as(conn, other_user)
+    assert other_user.admin == false
+
+    put(
+      conn,
+      Routes.user_path(conn, :update, other_user, %{
+        user: %{
+          password: "",
+          password_confirmation: "",
+          admin: true,
+        }
+      })
+    )
+
+    updated_other_user = Accounts.get_user(other_user.id)
+    assert updated_other_user.admin == false
+  end
+```
