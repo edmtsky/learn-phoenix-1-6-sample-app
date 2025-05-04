@@ -793,3 +793,29 @@ SELECT u0."id", u0."email", u0."name", u0."password_hash", u0."admin", u0."inser
 [debug] QUERY OK db=27.8ms queue=1.1ms idle=1374.5ms
 DELETE FROM "users" WHERE "id" = $1 [4]
 ```
+
+
+### learned:
+
+- Users can be updated using an `edit` form,
+  which sends a `PUT` request to the update action.
+- Safe updating through the web is enforced using the `cast` function
+  provided by the `ecto` package (Ecto.Changeset.cast).
+- Plugs give a standard way to run functions that
+  manipulate the `conn` before particular controller actions.
+- We implement authorization using function plugs.
+- Authorization tests use low-level commands
+  to submit particular HTTP requests directly to controller actions.
+- Friendly forwarding redirects users where they wanted to go after logging in.
+- The users index page shows all users, one page at a time.
+- Phoenix uses the standard file `priv/repo/seeds.exs` to seed the database
+  with sample data using `mix run priv/repo/seeds.exs`.
+- Using `render_many @users_page, SampleAppWeb.UserView "_user.html", assigns`
+  calls the `_user.html.heex` partial on each
+  user in the `@users_page` list assign.
+- Admins can delete users through the web
+  by clicking on delete links
+  that issue DELETE requests to the User controller delete action.
+- We can create a large number of test users using `ExMachina` and
+  our `User` factory.
+

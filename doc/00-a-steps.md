@@ -52,20 +52,21 @@
     - testing remember-me checkbox
     - testing the remember branch
 
-- updating-users
-  - edit form
-  - handle unsuccessful and successful edits
+- user edit/update/index/delete actions
+  - updating-users
+    - edit form
+    - handle unsuccessful and successful edits
 
-- authorization
-  - requiring logged-in users (to edit profile)
-  - requiring the right user
-  - friendly forwarding
+  - authorization
+    - requiring logged-in users (to edit profile)
+    - requiring the right user
+    - friendly forwarding
 
-- showing all users
-  - user index
-  - pagination
-  - partial refactoring for users index
+  - showing all users
+    - user index
+    - pagination
+    - partial refactoring for users index
 
-- deleting users
-  - administrative users
-  - the delete action
+  - deleting users
+    - administrative users
+    - the delete action
