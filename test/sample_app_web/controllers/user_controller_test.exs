@@ -61,4 +61,11 @@ defmodule SampleAppWeb.UserControllerTest do
     assert %{"success" => "Welcome to the Sample App!"} = get_flash(conn)
     assert redirected_to(conn, 302) == Routes.root_path(conn, :home)
   end
+
+  test "should redirect index when not logged in", %{conn: conn} do
+    conn = get(conn, Routes.user_path(conn, :index))
+
+    refute Enum.empty?(get_flash(conn))
+    assert redirected_to(conn, 302) == Routes.login_path(conn, :create)
+  end
 end

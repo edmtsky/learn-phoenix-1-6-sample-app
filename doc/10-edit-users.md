@@ -304,3 +304,78 @@ add `AuthPlug.store_location` into  `AuthPlug.logged_in_user`
 and `AuthPlug.redirect_back_or(conn, Routes.user_path(conn, :show, user))`
 to `SessionController.create/2`
 
+
+
+### Showing all users
+
+#### Users Index
+first implement a security model:
+- the list of all users is available only to logged-in users.
+  (protect the `index` page from unauthorized access)
+
+```elixir
+defmodule SampleAppWeb.UserControllerTest do
+  use SampleAppWeb.ConnCase, async: true
+
+  setup do
+    {:ok, user: Factory.insert(:user), other_user: Factory.insert(:user)}
+  end
+
+  test "should redirect index when not logged in", %{conn: conn} do         # +
+    conn = get(conn, Routes.user_path(conn, :index))                        # +
+
+    refute Enum.empty?(get_flash(conn))                                     # +
+    assert redirected_to(conn, 302) == Routes.login_path(conn, :create)     # +
+  end                                                                       # +
+
+  #...
+end
+```
+
+add an `index` action with pretection by `AuthPlug.logged_in_user`
+
+```elixir
+defmodule SampleAppWeb.UserController do
+  use SampleAppWeb, :controller
+  alias SampleApp.Accounts
+  alias SampleApp.Accounts.User
+  alias SampleAppWeb.AuthPlug
+
+  #                                    v+++++
+  plug :logged_in_user when action in [:index, :edit, :update]              # +
+  plug :correct_user   when action in [:edit, :update]
+
+  def index(conn, _params) do                                               # +
+    users = Accounts.list_users()                                           # +
+    render(conn, "index.html", users: users)                                # +
+  end                                                                       # +
+
+  # ...
+end
+```
+
+> lib/sample_app_web/templates/user/index.html.heex
+```heex
+<h1>All users</h1>
+
+<ul class="users">
+  <%= for user <- @users do %>
+    <li>
+      <%= gravatar_for user, size: 50 %>
+      <%= link user.name, to: Routes.user_path(@conn, :show, user) %>
+    </li>
+  <% end %>
+</ul>
+```
+
+DynamicTextHelper:
+
+```elixir
+ defp get_page_title(%{view_module: UserView, action: :index}), do: "All users"
+```
+
+css style, update link in _header
+
+add an integration test for all the layout links,
+(including the proper behavior for logged-in and non-logged-in users)
+

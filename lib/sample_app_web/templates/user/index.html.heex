@@ -1,0 +1,10 @@
+<h1>All users</h1>
+
+<ul class="users">
+  <%= for user <- @users do %>
+    <li>
+      <%= gravatar_for user, size: 50 %>
+      <%= link user.name, to: Routes.user_path(@conn, :show, user) %>
+    </li>
+  <% end %>
+</ul>

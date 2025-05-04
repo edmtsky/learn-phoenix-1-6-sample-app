@@ -60,3 +60,6 @@
   - requiring logged-in users (to edit profile)
   - requiring the right user
   - friendly forwarding
+
+- showing all users
+  - user index

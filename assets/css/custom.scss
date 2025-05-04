@@ -204,3 +204,23 @@ input {
   width: auto;
   margin-left: 0;
 }
+
+/* Users index */
+
+.users {
+  list-style: none;
+  margin: 0;
+  li {
+    overflow: auto;
+    padding: 10px 0;
+    border-bottom: 1px solid $gray-medium-light;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  + nav {
+    margin-top: 15px;
+  }
+}
